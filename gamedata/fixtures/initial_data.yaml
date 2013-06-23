@@ -1,0 +1,21 @@
+-model: gamedata.Team
+	pk: 1
+	fields:
+		name = "Philadelphia Flyers"
+		initials = "PHI"
+	pk: 2
+	fields:
+		name = "New York Rangers"
+		initials = "NYR"
+	pk: 3
+	fields:
+		name = "Pittsburgh Penguins"
+		initials = "PIT"
+	pk: 4
+	fields:
+		name = "New York Islanders"
+		initials = "NYI"
+	pk: 5
+	fields:
+		name = "New Jersey Devils"
+		initials = "NJD"

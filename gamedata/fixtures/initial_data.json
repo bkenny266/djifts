@@ -1,0 +1,242 @@
+[
+	{
+		"model":"gamedata.Team",
+		"pk":"1",
+		"fields": {
+			"name": "PHILADELPHIA FLYERS",
+			"initials": "PHI"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"2",
+		"fields": {
+			"name": "NEW YORK RANGERS",
+			"initials": "NYR"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"3",
+		"fields": {
+			"name": "NEW YORK ISLANDERS",
+			"initials": "NYI"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"4",
+		"fields": {
+			"name": "PITTSBURGH PENGUINS",
+			"initials": "PIT"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"5",
+		"fields": {
+			"name": "NEW JERSEY DEVILS",
+			"initials": "NJD"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"6",
+		"fields": {
+			"name": "TAMPA BAY LIGHTNING",
+			"initials": "TBL"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"7",
+		"fields": {
+			"name": "WASHINGTON CAPITALS",
+			"initials": "WAS"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"8",
+		"fields": {
+			"name": "FLORIDA PANTHERS",
+			"initials": "FLA"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"9",
+		"fields": {
+			"name": "WINNIPEG JETS",
+			"initials": "WIN"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"10",
+		"fields": {
+			"name": "CAROLINA HURRICANES",
+			"initials": "CAR"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"11",
+		"fields": {
+			"name": "OTTAWA SENATORS",
+			"initials": "OTT"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"12",
+		"fields": {
+			"name": "TORONTO MAPLE LEAFS",
+			"initials": "TOR"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"13",
+		"fields": {
+			"name": "MONTREAL CANADIENS",
+			"initials": "MON"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"14",
+		"fields": {
+			"name": "BOSTON BRUINS",
+			"initials": "BOS"
+		}
+	},	
+	{
+		"model":"gamedata.Team",
+		"pk":"15",
+		"fields": {
+			"name": "BUFFALO SABRES",
+			"initials": "BUF"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"16",
+		"fields": {
+			"name": "DETROIT RED WINGS",
+			"initials": "DET"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"17",
+		"fields": {
+			"name": "CHICAGO BLACKHAWKS",
+			"initials": "CHI"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"18",
+		"fields": {
+			"name": "ST. LOUIS BLUES",
+			"initials": "STL"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"19",
+		"fields": {
+			"name": "COLUMBUS BLUE JACKETS",
+			"initials": "CBJ"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"20",
+		"fields": {
+			"name": "NASHVILLE PREDATORS",
+			"initials": "NSH"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"21",
+		"fields": {
+			"name": "DALLAS STARS",
+			"initials": "DAL"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"22",
+		"fields": {
+			"name": "LOS ANGELES KINGS",
+			"initials": "LAK"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"23",
+		"fields": {
+			"name": "ANAHEIM DUCKS",
+			"initials": "ANA"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"24",
+		"fields": {
+			"name": "SAN JOSE SHARKS",
+			"initials": "SJS"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"25",
+		"fields": {
+			"name": "PHOENIX COYOTES",
+			"initials": "PHX"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"26",
+		"fields": {
+			"name": "VANCOUVER CANUCKS",
+			"initials": "VAN"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"27",
+		"fields": {
+			"name": "EDMONTON OILERS",
+			"initials": "EDM"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"28",
+		"fields": {
+			"name": "CALGARY FLAMES",
+			"initials": "CAL"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"29",
+		"fields": {
+			"name": "COLORADO AVALANCHE",
+			"initials": "COL"
+		}
+	},
+	{
+		"model":"gamedata.Team",
+		"pk":"30",
+		"fields": {
+			"name": "MINNESOTA WILD",
+			"initials": "MIN"
+		}
+	}
+]
