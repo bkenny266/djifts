@@ -27,8 +27,8 @@ class TeamGame(models.Model):
 class Player(models.Model):
 	first_name = models.CharField(max_length = 255)
 	last_name = models.CharField(max_length = 255)
-	number = models.IntegerField()
 	position = models.CharField(max_length = 2)
+	number = models.IntegerField()
 
 	def __unicode__(self):
 		return self.last_name + ", " + self.first_name
@@ -37,29 +37,26 @@ class Player(models.Model):
 class Game(models.Model):
 	game_id = models.IntegerField(primary_key = True)
 
-	away_team = models.ForeignKey(TeamGame, related_name='away')
-	home_team = models.ForeignKey(TeamGame, related_name='home')
+	team_home = models.ForeignKey(TeamGame, related_name='away')
+	team_away = models.ForeignKey(TeamGame, related_name='home')
 
 	def __unicode__(self):
-		return "%s (%s @ %s)" % (self.game_id, self.away_team.team.initials, self.home_team.team.initials)
+		return "%s (%s @ %s)" % (self.game_id, self.team_away.team.initials, self.team_home.team.initials)
 
 	def roster_home(self, pos = 'a'):
-		return self.__roster__(self.home_team, pos)
+		return self.__roster__(self.team_home, pos)
 
 	def roster_away(self, pos = 'a'):
-		return self.__roster__(self.away_team, pos)
+		return self.__roster__(self.team_away, pos)
 
 	def shifts_home(self, pos = 'a'):
-		return self.__shifts__(self.home_team, pos)
+		return self.__shifts__(self.team_home, pos)
 	
 	def shifts_away(self, pos = 'a'):
-		return self.__shifts__(self.away_team, pos)		
-
-
-
-
+		return self.__shifts__(self.team_away, pos)
 
 	def __roster__(self, team, pos):
+		#improvements: modify 'pos' to standardized case so no need to check cases
 		if pos == 'a' or pos == 'A':
 			return PlayerGame.objects.filter(team = team)
 		elif pos == 'd' or pos == 'D':
@@ -83,11 +80,12 @@ class Game(models.Model):
 			return PlayerGame.objects.filter(team = team).filter(
 											player__position='G')
 		else:
-			raise(ValueError("Valid arguments are 'c', 'd', 'rw', 'lw', 'f'"))
+			raise(ValueError("Valid arguments are 'c', 'd', 'r', 'l', 'f'"))
 
 	def __shifts__(self, team, pos):
 		if pos == 'a' or pos == 'A':
-			q = ShiftData.objects.filter(playergame__team = team)
+			q = ShiftData.objects.filter(playergame__team = team).exclude(
+											playergame__player__position='G')
 		elif pos == 'd' or pos == 'D':
 			q = ShiftData.objects.filter(playergame__team = team).filter(
 											playergame__player__position='D')
@@ -109,7 +107,7 @@ class Game(models.Model):
 			q = ShiftData.objects.filter(playergame__team = team).filter(
 											playergame__player__position='G')
 		else:
-			raise(ValueError("Valid arguments are 'c', 'd', 'rw', 'lw', 'f'"))
+			raise(ValueError("Valid arguments are 'c', 'd', 'r', 'l', 'f'"))
 
 		return q.order_by('start_time', 'end_time')
 
@@ -117,7 +115,7 @@ class Game(models.Model):
 
 
 class PlayerGame(models.Model):
-	#also includes teamgame
+	#also includes teamgame (many to many)
 	player = models.ForeignKey(Player)
 	team = models.ForeignKey(TeamGame)
 		
@@ -135,6 +133,26 @@ class ShiftData(models.Model):
 
 	def __unicode__(self):
 		return '(%s, %d, %d)' % (self.playergame.player.last_name, self.start_time, self.end_time)
+
+
+class Line(models.Model):
+	team = models.ForeignKey(Team)
+	player = models.ManyToManyField(Player)
+	#goals
+	#+/-
+	#games played
+	#season ice time
+	
+class LineGame(models.Model):
+	team_game = models.ForeignKey(TeamGame)
+	#line = models.ForeignKey(Line)
+	#players (a list of players)
+	#goals
+	#+/-
+	#total ice time
+	
+
+
 
 
 
@@ -167,7 +185,7 @@ def add_game(gameNum):
 		away = TeamGame.objects.create(team = Team.objects.get(name=away_name))
 		home = TeamGame.objects.create(team = Team.objects.get(name=home_name))
 
-		game = Game(game_id=gameNum, home_team=home, away_team=away)
+		game = Game(game_id=gameNum, team_home=home, team_away=away)
 		game.save()
 
 		import_player_data(away, roster_soup)
@@ -190,7 +208,7 @@ def import_player_data(team, roster_soup):
 		print "Error - no away or home status for Team"
 		return False
 
-	#Turn game_id into a string for future reference
+	#Turn game_id into string with leading zero to match to NHL.com
 	game_id_str = "0" + str(game_id)
 
 	##GET ROSTER
