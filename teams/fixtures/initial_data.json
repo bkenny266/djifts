@@ -1,6 +1,6 @@
 [
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"1",
 		"fields": {
 			"name": "PHILADELPHIA FLYERS",
@@ -8,7 +8,7 @@
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"2",
 		"fields": {
 			"name": "NEW YORK RANGERS",
@@ -16,7 +16,7 @@
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"3",
 		"fields": {
 			"name": "NEW YORK ISLANDERS",
@@ -24,7 +24,7 @@
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"4",
 		"fields": {
 			"name": "PITTSBURGH PENGUINS",
@@ -32,7 +32,7 @@
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"5",
 		"fields": {
 			"name": "NEW JERSEY DEVILS",
@@ -40,7 +40,7 @@
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"6",
 		"fields": {
 			"name": "TAMPA BAY LIGHTNING",
@@ -48,15 +48,15 @@
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"7",
 		"fields": {
 			"name": "WASHINGTON CAPITALS",
-			"initials": "WAS"
+			"initials": "WSH"
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"8",
 		"fields": {
 			"name": "FLORIDA PANTHERS",
@@ -64,15 +64,15 @@
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"9",
 		"fields": {
 			"name": "WINNIPEG JETS",
-			"initials": "WIN"
+			"initials": "WPG"
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"10",
 		"fields": {
 			"name": "CAROLINA HURRICANES",
@@ -80,7 +80,7 @@
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"11",
 		"fields": {
 			"name": "OTTAWA SENATORS",
@@ -88,7 +88,7 @@
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"12",
 		"fields": {
 			"name": "TORONTO MAPLE LEAFS",
@@ -96,15 +96,15 @@
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"13",
 		"fields": {
 			"name": "MONTREAL CANADIENS",
-			"initials": "MON"
+			"initials": "MTL"
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"14",
 		"fields": {
 			"name": "BOSTON BRUINS",
@@ -112,7 +112,7 @@
 		}
 	},	
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"15",
 		"fields": {
 			"name": "BUFFALO SABRES",
@@ -120,7 +120,7 @@
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"16",
 		"fields": {
 			"name": "DETROIT RED WINGS",
@@ -128,7 +128,7 @@
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"17",
 		"fields": {
 			"name": "CHICAGO BLACKHAWKS",
@@ -136,7 +136,7 @@
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"18",
 		"fields": {
 			"name": "ST. LOUIS BLUES",
@@ -144,7 +144,7 @@
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"19",
 		"fields": {
 			"name": "COLUMBUS BLUE JACKETS",
@@ -152,7 +152,7 @@
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"20",
 		"fields": {
 			"name": "NASHVILLE PREDATORS",
@@ -160,7 +160,7 @@
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"21",
 		"fields": {
 			"name": "DALLAS STARS",
@@ -168,7 +168,7 @@
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"22",
 		"fields": {
 			"name": "LOS ANGELES KINGS",
@@ -176,7 +176,7 @@
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"23",
 		"fields": {
 			"name": "ANAHEIM DUCKS",
@@ -184,7 +184,7 @@
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"24",
 		"fields": {
 			"name": "SAN JOSE SHARKS",
@@ -192,7 +192,7 @@
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"25",
 		"fields": {
 			"name": "PHOENIX COYOTES",
@@ -200,7 +200,7 @@
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"26",
 		"fields": {
 			"name": "VANCOUVER CANUCKS",
@@ -208,7 +208,7 @@
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"27",
 		"fields": {
 			"name": "EDMONTON OILERS",
@@ -216,15 +216,15 @@
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"28",
 		"fields": {
 			"name": "CALGARY FLAMES",
-			"initials": "CAL"
+			"initials": "CGY"
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"29",
 		"fields": {
 			"name": "COLORADO AVALANCHE",
@@ -232,7 +232,7 @@
 		}
 	},
 	{
-		"model":"gamedata.Team",
+		"model":"teams.Team",
 		"pk":"30",
 		"fields": {
 			"name": "MINNESOTA WILD",

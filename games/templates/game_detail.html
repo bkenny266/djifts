@@ -1,0 +1,21 @@
+<HEAD><TITLE>Hello</TITLE></HEAD>
+
+<HTML>
+	<p>just some pagse</p>
+	<br><br>
+	{% block content %}
+	<p>Home Team!!</p>
+	<ul>
+		{% for player in home %}
+			<li> {{ player }} </li>
+		{% endfor %}
+	</ul>
+
+	<p>Away Team!!</p>
+	<ul>
+		{% for player in away %}
+			<li> {{ player }} </li>
+		{% endfor %}
+	</ul>
+	{% endblock %}	
+</HTML

@@ -1,0 +1,6 @@
+#files ignored by git
+current.py
+ignore.txt
+*.pyc
+gamedata/
+lines/

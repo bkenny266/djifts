@@ -1,0 +1,13 @@
+<HEAD><TITLE>Hello</TITLE></HEAD>
+
+<HTML>
+	<p>just some page</p>
+
+	{% block content %}
+	<ul>
+		{% for game in object_list %}
+			<li><a href="./{{ game.game_id }}/"> {{ game }} </a></li>
+		{% endfor %}
+	</ul>
+	{% endblock %}
+</HTML

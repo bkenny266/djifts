@@ -16,7 +16,7 @@ DATABASES = {
         'NAME': 'djifts_db',                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': 'postgres',
-        'PASSWORD': '',
+        'PASSWORD': 'reSstinger105',
         'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
         'PORT': '',                      # Set to empty string for default.
     }
@@ -96,7 +96,7 @@ TEMPLATE_LOADERS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
@@ -113,7 +113,7 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(os.path.dirname(__file__), 'templates').replace('\\', '/'),
-    os.path.join(os.path.dirname(__file__), 'gamedata\\templates').replace('\\', '/'),
+    os.path.join(os.path.dirname(__file__), 'games\\templates').replace('\\', '/'),
 
 )
 
@@ -124,7 +124,9 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'gamedata',
+    'games',
+    'players',
+    'teams',
     'django_extensions',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
