@@ -17,7 +17,7 @@ from .date_util import process_date
 def add_game(game_num):
 #INPUT: game_num is the unique id for the game, which is determined as follows
 #		 		[season][season_subcategory][game_number] 
-#				where season_subcategory 02 = regular season, 03 = playoffs
+#				where season_subcategory is 02 = regular season, 03 = playoffs
 #				ex: 12020420
 #					season = 12 (season starting in 2012)
 #					season_subcategory = 02 (regular season)

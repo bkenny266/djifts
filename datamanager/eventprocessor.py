@@ -1,3 +1,7 @@
+'''
+DATAMANAGER - eventprocessor.py
+'''
+
 import re
 
 class EventProcessor():
@@ -20,7 +24,7 @@ class EventProcessor():
 				time = current_object.previous_sibling.previous_sibling.next_element
 				data_block = current_object.next_sibling.next_sibling.text
 
-				parsed = re.match('^(\w{3})\D+#(\d{1,2})', data_block)
+				parsed = re.match(r'^[ ]*([A-Z.]+)[^#]+#(\d{1,2})', data_block)
 				team_initials = parsed.group(1)
 				player_number = parsed.group(2)
 
@@ -52,6 +56,22 @@ class Event(object):
 		self.event_player = int(event_player)
 		self.event_period = int(event_period)
 		self.event_time = event_time
+
+		if event_team_initials == "L.A":
+			self.event_team_initials = "LAK"
+		
+		elif event_team_initials == "S.J":
+			self.event_team_initials = "SJS"
+
+		elif event_team_initials == "T.B":
+			self.event_team_initials ="TBL"
+
+		elif event_team_initials == "N.J":
+			self.event_team_initials = "NJD"
+
+		else:
+			self.event_team_initials = event_team_initials
+
 		self.event_team_initials = event_team_initials
 
 		self.__convert_to_seconds__()
