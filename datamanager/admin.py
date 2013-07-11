@@ -1,6 +1,8 @@
-#DATA MANAGER APP - admin.py
-#Interacts with the various app data models that are loaded from each game
-#Game data is added to the database by using the add_game() function.
+'''
+DATA MANAGER APP - admin.py
+Interacts with the various app data models that are loaded from each game
+Game data is added to the database by using the add_game() function.
+'''
 
 from datetime import date
 

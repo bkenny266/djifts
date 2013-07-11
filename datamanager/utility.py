@@ -7,6 +7,10 @@ import re
 from bs4 import BeautifulSoup
 from nameparser import HumanName
 
+'''
+DATAMANAGER - utility.py
+'''
+
 from games.models import Game, TeamGame, PlayerGame, ShiftGame
 from players.models import Player
 from teams.models import Team

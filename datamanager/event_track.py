@@ -1,3 +1,7 @@
+'''
+DATAMANAGER - event_track.py
+'''
+
 import re
 
 class EventProcessor():
@@ -20,7 +24,7 @@ class EventProcessor():
 				time = current_object.previous_sibling.previous_sibling.next_element
 				data_block = current_object.next_sibling.next_sibling.text
 
-				parsed = re.match(r'([A-Z.]+)\D+#(\d{1,2})', data_block)
+				parsed = re.match(r'^\b*([A-Z.]+)\D+#(\d{1,2})', data_block)
 				team_initials = parsed.group(1)
 				player_number = parsed.group(2)
 

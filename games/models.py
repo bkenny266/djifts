@@ -11,7 +11,7 @@ from teams.models import Team
 
 
 class TeamGame(models.Model):
-#TeamGame is a data representation of each team that participates in each game.  
+#TeamGame is a data representation of each team that players in each game.  
 #Every game will have a 'home team' and 'away team', which can be accessed through the 
 #corresponding Game's related fields of 'team_home' (home) and 'team_away' (away).
 
