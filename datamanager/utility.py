@@ -7,14 +7,32 @@ import re
 from bs4 import BeautifulSoup
 from nameparser import HumanName
 
-'''
-DATAMANAGER - utility.py
-'''
-
-from games.models import Game, TeamGame, PlayerGame, ShiftGame
+from games.models import Game, TeamGame, PlayerGame, ShiftGame, TeamGameEvent
 from players.models import Player
 from teams.models import Team
+
 from .myfunks import convertToSecs, deleteAfter
+from .eventprocessor import EventProcessor
+
+
+class LineData(object):
+#object used for storing game lines and accompanying data
+	line_list = []
+	start_time = None
+	end_time = None
+	shift_length = None
+
+	def calculate_length(self):
+	#calculates the length of time this shift has been on the ice
+		length = self.end_time - self.start_time
+		if self.start_time == None or self.end_time == None:
+			raise(ValueError("start_time and end_time need to be set"))
+		elif length < 0:
+			raise (ValueError("start_time (%d) is greater than end_time (%d)" % (self.start_time, self.end_time)))
+		else:
+			self.shift_length = length
+
+
 
 def get_front_page():
 	r = requests.get('http://www.nhl.com/ice/gamestats.htm?fetchKey=20133ALLSATAll&sort=gameDate&viewName=teamRTSSreports')
@@ -24,7 +42,10 @@ def get_front_page():
 	return soup
 
 def get_soup(game_num, link_type):
-	#returns beautiful soup object
+	'''
+	returns a beautiful soup object of different types of game data
+	link_type is a string to specify data type - 'roster', 'shifts_home', 'shifts_away', or 'play_by_play'
+	'''
 
 	#extract season number from game_id and use it for the data source URL
 	season_num = game_num / 1000000
@@ -176,12 +197,9 @@ def import_player_data(team, roster_soup):
 			shift = shift.next_sibling.next_sibling
 			shift_list = shift.find_all("td")
 
-def add_lines(teamgame):
 
-	shift_list = []
-	line_list = []
-
-	def process_shift_list(shift_item, list_index):
+def make_lines(teamgame):
+	def process_shift_list(shift_item, list_index=0):
 		#Makes sure shifts are in order of end times
 		#If something is out of order, it will be pulled into a separate list
 		#Each list will be in the correct order of end_time values
@@ -198,81 +216,54 @@ def add_lines(teamgame):
 		except IndexError:
 			#if an index error occurs, list does not exist at list_index
 			shift_list.append([shift_item])
+	
+
+	def check_list(list_index, shift_index):
+		#scans a list item and determines if the list should match this item
+		#runs recursively to advance the list
 
 
-	def make_lines():
+		list_end = False
 
-		def check_list(list_index, shift_index):
-			#scans a list item and determines if the list should match this item to 
-			#recursivelu runs on itself to advance the list
+		#if shift index is the last in the list
+		if shift_index >= len(shift_list[list_index]) - 1:
+			list_end = True
 
+		#if shift index was previously marked as the end of a list
+		if shift_index == -1:
+			#mark as end of list, point to end of list
+			list_end = True
+			shift_index = len(shift_list[list_index]) - 1
 
-			list_end = False
+		#initializes return value to current value
+		return_index = shift_index
 
-			#if shift index is the last in the list
-			if shift_index >= len(shift_list[list_index]) - 1:
-				list_end = True
+		#set a variable to current list object
+		current = shift_list[list_index][shift_index]
 
-			#if shift index was previously marked as the end of a list
-			if shift_index == -1:
-				#mark as end of list, point to end of list
-				list_end = True
-				shift_index = len(shift_list[list_index]) - 1
+		#no further actions if current item has not yet been reached
+		if current.start_time > prev_end:
+			pass
 
-			#initializes return value to current value
-			return_index = shift_index
+		#if current item is no longer relevant, move ahead in list and re-check
+		#note: advances return index
+		elif current.end_time <= prev_end:
+			if not list_end:
+				return_index = check_list(list_index, shift_index + 1)
 
-			#set a variable to current list object
-			current = shift_list[list_index][shift_index]
+		#if current item is part of the active shift, add to list and check the next item
+		#note: does not advance the return index
+		elif current.start_time <= prev_end and prev_end < current.end_time:
+			current_line_list.append(current)
 
-			#no further actions if current item has not yet been reached
-			if current.start_time > prev_end:
-				pass
+			if not list_end:
+				check_list(list_index, shift_index + 1)
 
-			#if current item is no longer relevant, move ahead in list and re-check
-			#note: advances return index
-			elif current.end_time <= prev_end:
-				if not list_end:
-					return_index = check_list(list_index, shift_index + 1)
+		#set index to a special value if list is at the end
+		if list_end:
+			return_index = -1
 
-			#if current item is part of the active shift, add to list and check the next item
-			#note: does not advance the return index
-			elif current.start_time <= prev_end and prev_end < current.end_time:
-				current_line.append(current)
-
-				if not list_end:
-					check_list(list_index, shift_index + 1)
-
-			#set index to a special value if list is at the end
-			if list_end:
-				return_index = -1
-
-			return return_index
-		###############################################
-
-
-		#set index start position to zero for each list
-		shift_index = []
-		
-		for x in range(0, len(shift_list)):
-			shift_index.append(0)
-
-		prev_end = 0
-		game_end = shift_list[0][-1].end_time
-			
-		#Loop until end of the game is the lowest time from a line
-		while(prev_end < game_end):
-			current_line = []
-
-			#runs checks on each list in the shift_array
-			#each iteration of the loop returns the list index of where to begin next time
-			for current_list_index in range(0, len(shift_list)):
-				shift_index[current_list_index] = check_list(current_list_index, shift_index[current_list_index])
-				
-			#get the lowest end_time and use it to calculate the next shift
-			prev_end = __get_lowest__(current_line)
-			line_list.append(current_line)
-
+		return return_index
 
 	def __get_lowest__(line):
 
@@ -282,16 +273,77 @@ def add_lines(teamgame):
 				lowest_end = shift.end_time
 
 		return lowest_end
+	###############################################
 
+	shift_list = []
+	line_list = []
+	
+	#iterate through the shift list to order by end_times
+	for item in teamgame.get_shifts():
+		process_shift_list(item)
 
-	for shift in teamgame.get_shifts():
-		process_shift_list(shift, 0)
+	
+	shift_index = []
 
-	make_lines()
+	#set index start position to zero for each list
+	for x in range(0, len(shift_list)):
+		shift_index.append(0)
+
+	prev_end = 0
+	game_end = shift_list[0][-1].end_time
+		
+	#Loop until end of the game is the lowest time from a line
+	while(prev_end < game_end):
+		current_line_list = []
+
+		#runs checks on each list in the shift_array
+		#each iteration of the loop returns the list index of where to begin next time
+		for current_list_index in range(0, len(shift_list)):
+			shift_index[current_list_index] = check_list(current_list_index, shift_index[current_list_index])
+		
+		#gets the value of the lowest end time on this shift, to use as next line's start time
+		lowest_time = __get_lowest__(current_line_list)
+
+		#instantiate LineData object and set values
+		current_line = LineData()
+		current_line.line_list = current_line_list
+		current_line.start_time = prev_end
+		current_line.end_time = lowest_time
+		current_line.calculate_length()
+
+		#set a new value prev_end to be used in the next iteration
+		prev_end = lowest_time
+
+		line_list.append(current_line)
+
 
 	return line_list
 
 
+def import_lines(teamgame):
+
+	game_lines = make_lines(teamgame)
+
+	for line in game_lines:
+		query = LineList
 
 
+def import_events(game):
+	event_soup = get_soup(game.pk, 'play_by_play')
 
+	events = EventProcessor(event_soup)
+
+	#get objects and initials for home and away teams
+	home_team_initials = game.team_home.team.initials
+	away_team_initials = game.team_away.team.initials
+
+	for event in events.flatten():
+		if event.event_team_initials == home_team_initials:
+			player = PlayerGame.objects.get(team = game.team_home, player__number = event.event_player)
+		elif event.event_team_initials == away_team_initials:
+			player = PlayerGame.objects.get(team = game.team_away, player__number = event.event_player)
+		else:
+			raise(ValueError("Event team initials (%s) do not match data" % event.event_team_initials))
+	
+		TeamGameEvent.objects.create(playergame=player, event_time=event.event_time_in_seconds, event_type=event.event_type)
+	

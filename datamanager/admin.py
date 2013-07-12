@@ -8,7 +8,7 @@ from datetime import date
 
 from bs4 import BeautifulSoup
 from games.models import Game
-from .utility import create_game, import_player_data, get_soup, add_lines, get_front_page
+from .utility import create_game, import_player_data, get_soup, import_lines, get_front_page, import_events
 from .date_util import process_date
 
 
@@ -41,15 +41,23 @@ def add_game(game_num):
 
 
 		#import data separately for home and away team
+
+		
+		
 		import_player_data(g.team_home, roster_soup)
 		import_player_data(g.team_away, roster_soup)
 
-		add_lines(g.team_home)
-		add_lines(g.team_away)
+		import_events(g)
+
+		#import_lines(g.team_home)
+		#import_lines(g.team_away)
 
 		return True
 
 
+
+###GAME_LIST STILL TO COME
+##Scans the list of games, adds an 
 def process_game_list():
 
 	soup = get_front_page()

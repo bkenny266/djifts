@@ -16,7 +16,7 @@ class TeamGame(models.Model):
 #corresponding Game's related fields of 'team_home' (home) and 'team_away' (away).
 
 #TeamGame contains functions for retrieving team-specific data from individual 
-#games - such as roster, shifts, and lines.
+#games such as roster, shifts, and lines.
 
 	team = models.ForeignKey(Team)
 	
@@ -154,14 +154,23 @@ class ShiftGame(models.Model):
 class LineGame(models.Model):
 	playergames = models.ManyToManyField(PlayerGame)
 
+
+
 	def __unicode__(self):
-		for index in len(self.playergames.all()):
-			print playergame.player.last_name,
-			if playergame < len(self.playergames.all()):
-				print " - ",
+		if self.playergames.count() > 0:
+			playerlist = ''
+			for player in self.playergames.all():
+				playerlist = playerlist + '%s\n' % player
+			return playerlist
+		else:
+			return unicode("Empty (%d)" % self.pk)
 
 
+class TeamGameEvent(models.Model):
+	playergame = models.ForeignKey(PlayerGame)
+	event_time = models.IntegerField()
+	event_type = models.CharField(max_length=25)
 
-######################################
-#Functions for collecting game data
-
+	def __unicode__(self):
+		text = "%s by %s (%d)" % (self.event_type, self.playergame, self.event_time)
+		return unicode(text)

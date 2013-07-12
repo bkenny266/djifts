@@ -41,6 +41,23 @@ class EventProcessor():
 				else:
 					raise(ValueError, "Invalid event - %s" % event)
 
+	def flatten(self):
+		flat_list = []
+
+		for goal in self.goals:
+			flat_list.append(goal)
+
+		for shot in self.shots:
+			flat_list.append(shot)
+
+		for block in self.blocks:
+			flat_list.append(block)
+
+		for hit in self.hits:
+			flat_list.append(hit)
+
+		return flat_list
+
 
 
 class Event(object):
@@ -72,8 +89,6 @@ class Event(object):
 		else:
 			self.event_team_initials = event_team_initials
 
-		self.event_team_initials = event_team_initials
-
 		self.__convert_to_seconds__()
 
 	def __convert_to_seconds__(self):
@@ -81,4 +96,3 @@ class Event(object):
 		timeMins = int(parsed.group(1))
 		timeSecs = int(parsed.group(2))
 		self.event_time_in_seconds = timeMins * 60 + timeSecs + ((self.event_period * 20 - 20) * 60)
-
