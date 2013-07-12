@@ -105,6 +105,46 @@ class TeamGame(models.Model):
 
 		return q.order_by('start_time', 'end_time')
 
+	def get_events(self, event_type='all'):
+		#returns query set of all events.  
+		#accepts an optional event_type argument 'all', 'goals', 'shots', 'hits', 'blocks'
+
+		event_type = event_type.lower()
+
+		q = TeamGameEvent.objects.filter(playergame__team = self)
+
+		if event_type == 'goals':
+			q = q.filter(event_type = "GOAL")
+		elif event_type == 'shots':
+			q = q.filter(event_type = "SHOT")
+		elif event_type == 'hits':
+			q = q.filter(event_type = "HIT")
+		elif event_type == 'blocks':
+			q = q.filter(event_type = "BLOCK")
+		elif event_type == 'all':
+			pass
+		else:
+			raise(ValueError("Valid arguments are 'all', 'goals', shots', 'hits', and 'blocks'"))
+
+		return q.order_by('event_time')
+
+	def get_line_by_time(self, time):
+		#receives argument of game time (in seconds) and returns the line that was on the ice
+
+		q = TeamGame.objects.filter(linegame__teamgame = self).filter(
+										linegame__start_time__lte = time).filter(
+										linegame__end_time__gt = time)
+
+		
+		#raise an error if more than one time value matches
+		if q.len() > 1:
+			raise (RuntimeError("Multiple lines on the ice at this time."))
+		elif q.len() == 0:
+			raise (RuntimeError("There are no lines at this time"))
+
+		#return the first element of the query (ther will only be one)
+		return q[0]
+
 
 
 class Game(models.Model):
@@ -153,8 +193,11 @@ class ShiftGame(models.Model):
 
 class LineGame(models.Model):
 	playergames = models.ManyToManyField(PlayerGame)
+	teamgame = models.ForeignKey(TeamGame)
 
-
+	start_time = models.IntegerField()
+	end_time = models.IntegerField()
+	shift_length = models.IntegerField()
 
 	def __unicode__(self):
 		if self.playergames.count() > 0:

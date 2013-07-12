@@ -12,20 +12,31 @@ class EventProcessor():
 	hits = []
 
 	event_types = ['GOAL', 'SHOT', 'HIT', 'BLOCK']
+	teams = []
+
 
 	def __init__(self, soup):
 
+		#Need to load both team names first, so blocked shots can be correctly assigned
+		self.__load_team_names__(soup)
+
 		for event in self.event_types:
 			type_objects = soup.find_all('td', text=event)
-
+			
 			for current_object in type_objects:
 				#period is 6 siblings back
 				period = current_object.previous_sibling.previous_sibling.previous_sibling.previous_sibling.previous_sibling.previous_sibling.text
 				time = current_object.previous_sibling.previous_sibling.next_element
 				data_block = current_object.next_sibling.next_sibling.text
 
-				parsed = re.match(r'^[ ]*([A-Z.]+)[^#]+#(\d{1,2})', data_block)
-				team_initials = parsed.group(1)
+				#format for shot blocks is different (blocking player appears second 
+				#and also team referes to the team that was BLOCKED, so need to swap that)
+				if event == 'BLOCK':
+					parsed = re.match(r'^[ ]*([A-Z.]+)[^#]+#[^#]+#(\d{1,2})', data_block)
+					team_initials = self.__get_other_team__(parsed.group(1))
+				else:
+					parsed = re.match(r'^[ ]*([A-Z.]+)[^#]+#(\d{1,2})', data_block)
+					team_initials = parsed.group(1)
 				player_number = parsed.group(2)
 
 				e = Event(event, team_initials, player_number, period, time)
@@ -57,6 +68,35 @@ class EventProcessor():
 			flat_list.append(hit)
 
 		return flat_list
+
+	def __load_team_names__(self, soup):
+		#loads team names into the EventProcessor object to use later
+		for event in self.event_types:
+			event_objects = soup.find_all('td', text=event)
+			for item in event_objects:
+				if len(self.teams) >= 2:
+					return
+
+				data_block = item.next_sibling.next_sibling.text
+				parsed = re.match(r'^[ ]*([A-Z.]+)', data_block)
+				team_initials = parsed.group(0)
+
+				if len(self.teams) == 0 or self.teams[0] != team_initials:
+					self.teams.append(team_initials)
+
+	def __get_other_team__(self, team_initials):
+		#takes argument of one team and returns the initials of the other team
+		if len(self.teams) != 2:
+			raise(ValueError("There are more or less than two team names loaded"))
+
+		if team_initials == self.teams[0]:
+			return self.teams[1]
+		elif team_initials == self.teams[1]:
+			return self.teams[0]
+		else:
+			raise(ValueError("Team %s does not exist" % team_initials))
+
+
 
 
 
