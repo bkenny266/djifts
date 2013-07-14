@@ -128,25 +128,8 @@ class TeamGame(models.Model):
 
 		return q.order_by('event_time')
 
-	def get_line_by_time(self, time):
-		#receives argument of game time (in seconds) and returns the line that was on the ice
-
-		q = TeamGame.objects.filter(linegame__teamgame = self).filter(
-										linegame__start_time__lte = time).filter(
-										linegame__end_time__gt = time)
-
-		
-		#raise an error if more than one time value matches
-		if len(q) > 1:
-			raise (RuntimeError("Multiple lines on the ice at this time."))
-		elif len(q) == 0:
-			raise (RuntimeError("There are no lines at this time"))
-
-		#return the first element of the query (ther will only be one)
-		return q[0]
-
 	def get_line(self, playerlist):
-		#receives a list of PlayGames or ShiftGames, returns the line object they play on
+		#receives a list of PlayerGames or ShiftGames, returns the line object they play on
 		#accepts list or queryset
 		
 		isShiftData = False
@@ -174,8 +157,6 @@ class TeamGame(models.Model):
 			raise(RuntimeError("There is more than one line that matches this."))
 		else:
 			return q[0]
-
-
 
 
 class Game(models.Model):
