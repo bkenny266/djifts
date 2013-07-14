@@ -7,7 +7,7 @@ import re
 from bs4 import BeautifulSoup
 from nameparser import HumanName
 
-from games.models import Game, TeamGame, PlayerGame, ShiftGame, TeamGameEvent
+from games.models import Game, TeamGame, PlayerGame, ShiftGame, TeamGameEvent, LineGame
 from players.models import Player
 from teams.models import Team
 
@@ -305,16 +305,43 @@ def make_lines(teamgame):
 		lowest_time = __get_lowest__(current_line_list)
 
 		#instantiate LineData object and set values
-		current_line = LineData()
-		current_line.line_list = current_line_list
-		current_line.start_time = prev_end
-		current_line.end_time = lowest_time
-		current_line.calculate_length()
+
+		line_object = teamgame.get_line(current_line_list)
+
+		shift_start = prev_end
+		shift_end = lowest_time
+		shift_length = shift_end - shift_start
+
+		if shift_length < 0:
+			raise(RuntimeError("Shift start time (%d) is later than end time (%d") % (shift_start, shift_end))
+
+		if line_object:
+			line_object.ice_time += shift_length
+			line_object.num_shifts += 1
+			line_object.save()
+			print current_line_list
+		else:
+			line_model = LineGame.objects.create(teamgame = teamgame, 
+				num_players = len(current_line_list),
+				ice_time = shift_length,
+				num_shifts = 1,
+				goals = 0,
+				hits = 0,
+				blocks = 0,
+				shots = 0)
+
+			for shiftgame in current_line_list:
+				line_model.playergames.add(shiftgame.playergame)
+
+			
 
 		#set a new value prev_end to be used in the next iteration
 		prev_end = lowest_time
 
-		line_list.append(current_line)
+		line_list.append(current_line_list)
+
+		#reset line_object for next loop
+		line_object = None
 
 
 	return line_list
@@ -324,8 +351,6 @@ def import_lines(teamgame):
 
 	game_lines = make_lines(teamgame)
 
-	for line in game_lines:
-		query = LineList
 
 
 def import_events(game):

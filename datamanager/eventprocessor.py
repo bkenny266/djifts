@@ -53,6 +53,7 @@ class EventProcessor():
 					raise(ValueError, "Invalid event - %s" % event)
 
 	def flatten(self):
+		'''returns a flat list of events sorted by time'''
 		flat_list = []
 
 		for goal in self.goals:
@@ -67,7 +68,7 @@ class EventProcessor():
 		for hit in self.hits:
 			flat_list.append(hit)
 
-		return flat_list
+		return sorted(flat_list, key = lambda x: x.event_time_in_seconds)
 
 	def __load_team_names__(self, soup):
 		#loads team names into the EventProcessor object to use later

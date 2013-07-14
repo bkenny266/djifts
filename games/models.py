@@ -11,7 +11,7 @@ from teams.models import Team
 
 
 class TeamGame(models.Model):
-#TeamGame is a data representation of each team that players in each game.  
+#TeamGame is a data representation of each team that plays in each game.  
 #Every game will have a 'home team' and 'away team', which can be accessed through the 
 #corresponding Game's related fields of 'team_home' (home) and 'team_away' (away).
 
@@ -137,13 +137,44 @@ class TeamGame(models.Model):
 
 		
 		#raise an error if more than one time value matches
-		if q.len() > 1:
+		if len(q) > 1:
 			raise (RuntimeError("Multiple lines on the ice at this time."))
-		elif q.len() == 0:
+		elif len(q) == 0:
 			raise (RuntimeError("There are no lines at this time"))
 
 		#return the first element of the query (ther will only be one)
 		return q[0]
+
+	def get_line(self, playerlist):
+		#receives a list of PlayGames or ShiftGames, returns the line object they play on
+		#accepts list or queryset
+		
+		isShiftData = False
+
+		#quietly fail if no items in the list
+		if len(playerlist) < 1:
+			return None
+
+		if isinstance(playerlist[0], ShiftGame):
+			isShiftData = True
+
+		q = LineGame.objects.filter(teamgame = self)
+
+		for player in playerlist:
+			if isShiftData:
+				player = player.playergame
+			q = q.filter(playergames = player)
+
+		q = q.filter(num_players = len(playerlist))
+
+
+		if len(q) == 0:
+			return None
+		elif len(q) > 1:
+			raise(RuntimeError("There is more than one line that matches this."))
+		else:
+			return q[0]
+
 
 
 
@@ -195,9 +226,15 @@ class LineGame(models.Model):
 	playergames = models.ManyToManyField(PlayerGame)
 	teamgame = models.ForeignKey(TeamGame)
 
-	start_time = models.IntegerField()
-	end_time = models.IntegerField()
-	shift_length = models.IntegerField()
+	num_shifts = models.IntegerField()
+	num_players = models.IntegerField()
+	ice_time = models.IntegerField()
+	goals = models.IntegerField()
+	shots = models.IntegerField()
+	blocks = models.IntegerField()
+	hits = models.IntegerField()
+
+
 
 	def __unicode__(self):
 		if self.playergames.count() > 0:
