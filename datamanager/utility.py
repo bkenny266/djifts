@@ -347,13 +347,9 @@ def make_lines(teamgame):
 	return line_list
 
 
-def import_lines(teamgame):
-
-	game_lines = make_lines(teamgame)
-
-
 
 def import_events(game):
+#Pull game event data from an EventProcessor object and add to the database in the Games model.
 	event_soup = get_soup(game.pk, 'play_by_play')
 
 	events = EventProcessor(event_soup)

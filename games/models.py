@@ -138,12 +138,14 @@ class TeamGame(models.Model):
 		if len(playerlist) < 1:
 			return None
 
+		#check if the first item in the list a ShiftGame object
 		if isinstance(playerlist[0], ShiftGame):
 			isShiftData = True
 
 		q = LineGame.objects.filter(teamgame = self)
 
 		for player in playerlist:
+			#if this is a ShiftData object, the path of PlayerGame changes
 			if isShiftData:
 				player = player.playergame
 			q = q.filter(playergames = player)
@@ -160,6 +162,12 @@ class TeamGame(models.Model):
 
 
 class Game(models.Model):
+#Game model represents each game played.
+#team_home and team_away are used to access
+#the TeamGame model and drill deeper into the game data
+
+	#game_id is the primary key and based on the game number from NHL website.  
+	#see datamanager.admin comments for info on how this value is assigned
 	game_id = models.IntegerField(primary_key = True)
 
 	team_home = models.ForeignKey(TeamGame, related_name='home')
@@ -183,7 +191,9 @@ class Game(models.Model):
 
 
 class PlayerGame(models.Model):
-	#also includes teamgame (many to many)
+#Scoring data for each player that participates in the corresponding TeamGame/Game.  
+#Future implementation tracks goals, shots, hits, blocks, and the number of GameLines 
+#they play on.
 	player = models.ForeignKey(Player)
 	team = models.ForeignKey(TeamGame)
 		
@@ -195,6 +205,7 @@ class PlayerGame(models.Model):
 
 
 class ShiftGame(models.Model):
+#Shift time data for each PlayerGame
 	playergame = models.ForeignKey(PlayerGame)
 	start_time = models.IntegerField()
 	end_time = models.IntegerField()
@@ -204,6 +215,8 @@ class ShiftGame(models.Model):
 
 
 class LineGame(models.Model):
+#Line data for each TeamGame
+
 	playergames = models.ManyToManyField(PlayerGame)
 	teamgame = models.ForeignKey(TeamGame)
 
@@ -228,6 +241,9 @@ class LineGame(models.Model):
 
 
 class TeamGameEvent(models.Model):
+#Statistical events from a TeamGame that are pulled from the game's Play-by-Play data
+#Includes all game data from goals, shots, hits, blocks.
+
 	playergame = models.ForeignKey(PlayerGame)
 	event_time = models.IntegerField()
 	event_type = models.CharField(max_length=25)
