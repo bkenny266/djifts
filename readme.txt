@@ -70,6 +70,7 @@ of how lines work in hockey.  Need to further categorize lines into combinations
 -Known bug in line generating method.  We aren't calculating a new line when players 
 come on the ice without replace another player going off the ice.  This can occur at 
 the end of a penalty or at the end of a game when the goalie is pulled.  
+-Improve code to make it pep8 compliant.
 -Need to implement testing structure across the board.  Unit tests, integration tests, etc.
 -Need to be particularly careful and vigilent about confirming the data being downloaded 
 to the database is correct and implement a rollback system in the event of failure.  
