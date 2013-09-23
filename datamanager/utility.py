@@ -3,11 +3,15 @@
 
 import requests
 import re
+from datetime import datetime, date
+import ipdb
+from django.db.models import Q
+
 
 from bs4 import BeautifulSoup
 from nameparser import HumanName
 
-from games.models import Game, TeamGame, PlayerGame, ShiftGame, TeamGameEvent, LineGame
+from games.models import Game, TeamGame, PlayerGame, ShiftGame, TeamGameEvent, LineGame, LineGameTime
 from players.models import Player
 from teams.models import Team
 
@@ -90,7 +94,8 @@ def create_game(game_num, roster_soup):
 	away = TeamGame.objects.create(team = Team.objects.get(name=away_name))
 	home = TeamGame.objects.create(team = Team.objects.get(name=home_name))
 
-	game = Game(game_id=game_num, team_home=home, team_away=away)
+
+	game = Game(game_id=game_num, team_home=home, team_away=away, date=import_date(roster_soup))	
 	game.save()
 
 	return game
@@ -197,128 +202,156 @@ def import_player_data(team, roster_soup):
 			shift = shift.next_sibling.next_sibling
 			shift_list = shift.find_all("td")
 
+	ShiftGame.objects.filter(playergame__player__position='G').delete()
+
 
 def make_lines(teamgame):
-	def process_shift_list(shift_item, list_index=0):
-		#Makes sure shifts are in order of end times
-		#If something is out of order, it will be pulled into a separate list
-		#Each list will be in the correct order of end_time values
+
+	def import_line(line, pos_type):
 
 		try:
-			#checks if the last item in list_index is >= to the value of shift_item
-			#if not, recursively call this function and check again on the next level's list
-			if shift_item.end_time >= shift_list[list_index][-1].end_time:
-				shift_list[list_index].append(shift_item)
+			filtered_line = {'D' : line.filter(playergame__player__position='D'),
+							'F' : line.filter(Q(playergame__player__position='C') | 
+									Q(playergame__player__position='R') | 
+									Q(playergame__player__position='L'))
 
-			else:
-				process_shift_list(shift_item, list_index+1)
+			}[pos_type.upper()]
+		except KeyError:
+			print "Invalid paramater in pos_type.  Accepts 'F','D'"
 
-		except IndexError:
-			#if an index error occurs, list does not exist at list_index
-			shift_list.append([shift_item])
-	
+		line_object = teamgame.get_line(filtered_line)
+		#ipdb.set_trace()
 
-	def check_list(list_index, shift_index):
-		#scans a list item and determines if the list should match this item
-		#runs recursively to advance the list
+		if line_object:
+
+			if (LineGameTime.objects.filter(linegame=line_object, end_time__gte=shift_end).count() == 0):
+				line_object.ice_time += shift_length
+				line_object.num_shifts += 1
+				line_object.save()
+
+				LineGameTime.objects.create(linegame = line_object, start_time=shift_start, end_time=shift_end, ice_time=shift_length)
+		else:
+			line_add = LineGame.objects.create(teamgame = teamgame, 
+				num_players = len(filtered_line),
+				ice_time = shift_length,
+				num_shifts = 1,
+				goals = 0,
+				hits = 0,
+				blocks = 0,
+				shots = 0,
+				linetype = pos_type)
+
+			LineGameTime.objects.create(linegame = line_add, start_time=shift_start, end_time=shift_end, ice_time=shift_length)
+
+			for shiftgame in filtered_line:
+				line_add.playergames.add(shiftgame.playergame)
 
 
-		list_end = False
 
-		#if shift index is the last in the list
-		if shift_index >= len(shift_list[list_index]) - 1:
-			list_end = True
 
-		#if shift index was previously marked as the end of a list
-		if shift_index == -1:
-			#mark as end of list, point to end of list
-			list_end = True
-			shift_index = len(shift_list[list_index]) - 1
 
-		#initializes return value to current value
-		return_index = shift_index
 
-		#set a variable to current list object
-		current = shift_list[list_index][shift_index]
 
-		#no further actions if current item has not yet been reached
-		if current.start_time > prev_end:
-			pass
-
-		#if current item is no longer relevant, move ahead in list and re-check
-		#note: advances return index
-		elif current.end_time <= prev_end:
-			if not list_end:
-				return_index = check_list(list_index, shift_index + 1)
-
-		#if current item is part of the active shift, add to list and check the next item
-		#note: does not advance the return index
-		elif current.start_time <= prev_end and prev_end < current.end_time:
-			current_line_list.append(current)
-
-			if not list_end:
-				check_list(list_index, shift_index + 1)
-
-		#set index to a special value if list is at the end
-		if list_end:
-			return_index = -1
-
-		return return_index
-
-	def __get_lowest__(line):
-
-		lowest_end = 99999
-		for shift in line:
-			if shift.end_time < lowest_end:
-				lowest_end = shift.end_time
-
-		return lowest_end
 	###############################################
 
-	shift_list = []
-	line_list = []
-	
-	#iterate through the shift list to order by end_times
-	for item in teamgame.get_shifts():
-		process_shift_list(item)
-
-	
-	shift_index = []
-
-	#set index start position to zero for each list
-	for x in range(0, len(shift_list)):
-		shift_index.append(0)
 
 	prev_end = 0
-	game_end = shift_list[0][-1].end_time
+	prev_line = None
+	game_end = ShiftGame.objects.filter(playergame__team=teamgame).reverse()[0].end_time
 		
-	#Loop until end of the game is the lowest time from a line
+	#Loop until end of the game is the lowest time of a line
 	while(prev_end < game_end):
-		current_line_list = []
-
-		#runs checks on each list in the shift_array
-		#each iteration of the loop returns the list index of where to begin next time
-		for current_list_index in range(0, len(shift_list)):
-			shift_index[current_list_index] = check_list(current_list_index, shift_index[current_list_index])
 		
-		#gets the value of the lowest end time on this shift, to use as next line's start time
-		lowest_time = __get_lowest__(current_line_list)
+		exception_case = False
+		current_line = ShiftGame.objects.filter(playergame__team=teamgame, start_time__lte=prev_end, end_time__gt=prev_end)
 
-		#instantiate LineData object and set values
+		#if a line comes out with more players than the previous line, some work needs to be done to figure out
+		#what time the extra player came on the ice.
+		if (prev_line and current_line.count() > prev_line.count()):
+			#check if the current group all started at the same time.  no need to proceed if so.
+			if not is_new_group(current_line):
+				exception_case = True
+				#ipdb.set_trace()
 
-		line_object = teamgame.get_line(current_line_list)
+				prev_end = compare_groups(prev_line, current_line, prev_end)
+
+				prev_line_set = LineGameTime.objects.filter(
+					linegame__teamgame=teamgame, start_time__lte=prev_end, end_time__gt=prev_end)
+				
+				for prev_line_obj in prev_line_set:
+					prev_line_obj.end_time = prev_end
+					prev_line_obj.save()
+
+				current_line = ShiftGame.objects.filter(playergame__team=teamgame, start_time__lte=prev_end, end_time__gt=prev_end)
+				#ipdb.set_trace()
+
+		lowest_time = get_lowest(current_line)
 
 		shift_start = prev_end
 		shift_end = lowest_time
+
+		#if an exception case, need to make sure this line doesn't overlap with next line
+
+
 		shift_length = shift_end - shift_start
 
-		if shift_length < 0:
-			raise(RuntimeError("Shift start time (%d) is later than end time (%d") % (shift_start, shift_end))
+		import_line(current_line, 'F')
+		import_line(current_line, 'D')
 
+		#if exception_case:
+		#	ipdb.set_trace()
+
+		#get offensive players
+		prev_end = lowest_time
+		prev_line = current_line
+
+		#ipdb.set_trace()
+
+
+def is_new_group(shifts):
+	#iterates through a ShiftGame query, and returns True if all players started shift at the same time
+	start_time = shifts.all()[0].start_time
+	for player in shifts.all()[1:]:
+		if player.start_time != start_time:
+			return False
+	
+	return True
+
+def get_lowest(shifts):
+	#iterates through a ShiftGame query, returns the lowest end_time attribute value
+
+	lowest_end = 99999
+	for shift in shifts:
+		if shift.end_time < lowest_end:
+			lowest_end = shift.end_time
+
+	return lowest_end
+
+
+def compare_groups(prev_line, current_line, exclude_time):
+	#compares two ShiftGame queries and returns the start time for
+	# the first shift that exists in current_line but not prev_line
+	# AND doesn't have a start time of ::exclude_time::
+	#Used for detecting special case players that come on the ice 
+	# without replacing another player
+
+	q = current_line.exclude(start_time__gte = exclude_time)
+	for this_player in prev_line:
+		q = q.exclude(playergame=this_player.playergame)
+
+	if q.count() == 0:
+		return exclude_time
+
+	return q[0].start_time
+
+
+'''
 		if line_object:
 			line_object.ice_time += shift_length
 			line_object.num_shifts += 1
 			line_object.save()
+
+			LineGameTime.objects.create(linegame = line_object, start_time=shift_start, end_time=shift_end, ice_time=shift_length)
 			print current_line_list
 		else:
 			line_model = LineGame.objects.create(teamgame = teamgame, 
@@ -329,6 +362,8 @@ def make_lines(teamgame):
 				hits = 0,
 				blocks = 0,
 				shots = 0)
+
+			LineGameTime.objects.create(linegame = line_model, start_time=shift_start, end_time=shift_end, ice_time=shift_length)
 
 			for shiftgame in current_line_list:
 				line_model.playergames.add(shiftgame.playergame)
@@ -343,13 +378,47 @@ def make_lines(teamgame):
 		#reset line_object for next loop
 		line_object = None
 
-
-	return line_list
+'''
 
 
 
 def import_events(game):
 #Pull game event data from an EventProcessor object and add to the database in the Games model.
+
+	def increment_event(teamgame, event):
+		#ipdb.set_trace()
+		#when querying the line, select the time at event_time-1 to make sure it takes the end of the shift rather than the beginning
+		try:
+			lgt = LineGameTime.objects.get(linegame__playergames__player__number=event.event_player, linegame__teamgame=teamgame, start_time__lte=event.event_time_in_seconds-1, end_time__gt=event.event_time_in_seconds-1)
+		except:
+			try:
+				lgt = LineGameTime.objects.get(linegame__playergames__player__number=event.event_player, linegame__teamgame=teamgame, start_time__lte=event.event_time_in_seconds, end_time__gt=event.event_time_in_seconds)
+			except:
+				print "%s %s not found at %s (pd %s) -  %s" % (event.event_team_initials, event.event_player, event.event_time, event.event_period, event.event_type.upper())
+				ipdb.set_trace()
+				return
+		line = lgt.linegame
+
+
+		#print event.event_type
+		#print event.event_time_in_seconds
+		if event.event_type == 'SHOT':
+			line.shots += 1
+		elif event.event_type == 'HIT':
+			line.hits += 1
+		elif event.event_type == 'BLOCK':
+			line.blocks += 1
+		elif event.event_type == 'GOAL':
+			line.goals += 1
+		else:
+			raise(ValueError, "Event type not valid")
+
+		player = PlayerGame.objects.get(team=teamgame, player__number=event.event_player)
+		line.save()
+		TeamGameEvent.objects.create(playergame=player, event_time=event.event_time_in_seconds, event_type=event.event_type, linegame=line)
+
+
+
 	event_soup = get_soup(game.pk, 'play_by_play')
 
 	events = EventProcessor(event_soup)
@@ -360,11 +429,36 @@ def import_events(game):
 
 	for event in events.flatten():
 		if event.event_team_initials == home_team_initials:
-			player = PlayerGame.objects.get(team = game.team_home, player__number = event.event_player)
+			team = game.team_home
 		elif event.event_team_initials == away_team_initials:
-			player = PlayerGame.objects.get(team = game.team_away, player__number = event.event_player)
+			team = game.team_away
 		else:
 			raise(ValueError("Event team initials (%s) do not match data" % event.event_team_initials))
-	
-		TeamGameEvent.objects.create(playergame=player, event_time=event.event_time_in_seconds, event_type=event.event_type)
+
+		increment_event(team, event)
+
+
+def import_date(soup):
+	#Pull a date from the roster file.  ROSTER FILE ONLY
+
+	days = ["^Sunday,", "^Monday,", "^Tuesday,", "^Wednesday,", "^Thursday,", "^Friday,", "^Saturday,"]
+	date_text = None
+
+	for day in days:
+		search_str = re.compile(day)
+		date_soup = soup.find('td', text=search_str)
+
+		if date_soup:
+			break
+
+
+	if not date_soup:
+		raise(Exception, "No date found in soup file")
+
+	date_text = date_soup.text
+	date_text = date_text[date_text.index(',')+1:].strip()
+
+	temp_date = datetime.strptime(date_text, "%B %d, %Y")
+	return date(temp_date.year, temp_date.month, temp_date.day)
+
 	

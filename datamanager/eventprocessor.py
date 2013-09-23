@@ -4,12 +4,7 @@ DATAMANAGER - eventprocessor.py
 
 import re
 
-class EventProcessor():
-
-	goals = []
-	shots = []
-	blocks = []
-	hits = []
+class EventProcessor(object):
 
 	event_types = ['GOAL', 'SHOT', 'HIT', 'BLOCK']
 	teams = []
@@ -18,6 +13,13 @@ class EventProcessor():
 	def __init__(self, soup):
 
 		#Need to load both team names first, so blocked shots can be correctly assigned
+		self.teams = []
+		
+		self.goals = []
+		self.shots = []
+		self.blocks = []
+		self.hits = []
+
 		self.__load_team_names__(soup)
 
 		for event in self.event_types:
