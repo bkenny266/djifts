@@ -56,4 +56,13 @@ def get_team_page(request, team_id):
 	return render(request, 'team_view.html', {'games' : g, 'team_id' : int(team_id), 'team' : team})
 
 
+def test_view(request, game_id, team):
 
+	game_id = int(game_id)
+
+	if team == "home":
+		return HttpResponse("This is just a HOME TEAM test %d" % game_id)
+	if team == "away":
+		return HttpResponse("This is just an AWAY TEAM test %d" % game_id)
+	else:
+		raise Http404
