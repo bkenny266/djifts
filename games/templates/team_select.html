@@ -1,0 +1,12 @@
+<HTML>
+	<BODY>
+		<select id="team_select">
+			{% for team in teams %}
+				<option value={{team.pk}}>{{team.initials}}</option>
+			{% endfor %}
+		</select>
+		<button onclick="window.location='/teams/' + document.getElementById('team_select').value + '/'">
+			Submit
+		</button>
+	</BODY>
+</HTML>

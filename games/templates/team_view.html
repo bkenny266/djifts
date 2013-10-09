@@ -1,0 +1,20 @@
+<HTML>
+	<BODY>
+		{{team.name}}
+		<BR><BR>
+		<TABLE>
+		{% for game in games %}
+		<TR>
+			{% ifequal game.team_home.team.pk team_id %}
+				<TD>VS {{game.team_away.team.initials}}</TD>
+				<TD>{{ game.team_home.pk }}</TD>
+			{% endifequal %}
+			{% ifequal game.team_away.team.pk team_id %}
+				<TD>@ {{game.team_home.team.initials}}</TD>
+				<TD>{{ game.team_away.pk }}</TD>
+			{% endifequal %}				
+		{% endfor %}
+		</TR>
+		</TABLE>
+	</BODY>
+</HTML>
