@@ -146,7 +146,7 @@ class TeamGame(models.Model):
 			hits = 1
 			sort_type = '-hits'
 		elif (event_type == 'blocks'):
-			hits = 1
+			blocks = 1
 			sort_type = '-blocks'
 		elif (event_type == 'shifts'):
 			sort_type = '-num_shifts'

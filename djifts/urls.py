@@ -1,7 +1,8 @@
 from django.conf.urls import patterns, include, url
 
+
 # Uncomment the next two lines to enable the admin:
-from games.views import GameListView, GameDetailView, TestView
+import games.views
 from django.contrib import admin
 admin.autodiscover()
 
@@ -15,8 +16,5 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^gamedata/', include('gamedata.urls')),
-    url(r'^games/$', GameListView.as_view()),
-    url(r'^games/(?P<pk>\d{8})/$', GameDetailView.as_view()),
-    url(r'^games/testview/$', TestView.as_view()),
+    url(r'^teams/', include('teams.urls')),
 )

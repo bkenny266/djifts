@@ -150,15 +150,15 @@ def import_player_data(team, roster_soup):
 		#If player does not exist, add to Player database and PlayerGame database.
 		#If player exists, add to PlayerGame database.
 		try:
-			p = Player.objects.get(first_name=first_name, last_name=last_name)
+			p = Player.objects.get(first_name=first_name, last_name=last_name, team=team.team, number=number)
 			PlayerGame.objects.create(player=p, team=team)
 		except Player.MultipleObjectsReturned:
 			#Check if multiple players in the league or if player has been traded
-			print "Multiple players with this name"
+			print "Multiple players returned"
 			pass
 		except Player.DoesNotExist:
 			#Check if new player or data error
-			p = Player.objects.create(first_name=first_name, last_name=last_name, position=position, number=number)
+			p = Player.objects.create(first_name=first_name, last_name=last_name, position=position, number=number, team=team.team)
 			PlayerGame.objects.create(player=p, team=team)
 			print "Added - " + p.first_name + " " + p.last_name + " (" + p.position + ") " + team.team.initials 
 	
