@@ -1,0 +1,37 @@
+<HEAD><TITLE>Hello</TITLE></HEAD>
+
+<HTML>
+	<TABLE>
+		<TR>
+			<TD>LINE</TD>
+			<TD>GOALS</TD>
+			<TD>SHOTS</TD>
+			<TD>BLOCKS</TD>
+			<TD>HITS</TD>
+			<TD>TOI</TD>
+	{% for result in results%}
+		<TR>
+			<TD>
+			{% for playergame in result.playergames.all %}
+				{{playergame.player.last_name}} - <BR>
+			{% endfor %}
+			</TD>
+			<TD>
+				{{ result.goals }}
+			</TD>
+			<TD>
+				{{ result.shots }}
+			</TD>
+			<TD>
+				{{ result.blocks }}
+			</TD>
+			<TD>
+				{{ result.hits }}
+			</TD>
+			<TD>
+				{{ result.ice_time }}
+			</TD>
+		</TR>
+	{% endfor %}
+	</TABLE>
+</HTML>

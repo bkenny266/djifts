@@ -6,11 +6,11 @@
 		{% for game in games %}
 		<TR>
 			{% ifequal game.team_home.team.pk team_id %}
-				<TD><a href="../../games/{{game.team_home.pk}}/home/">VS {{game.team_away.team.initials}}</a></TD>
+				<TD><a href="../../games/{{game.pk}}/home/">VS {{game.team_away.team.initials}}</a></TD>
 				<TD>{{ game.team_home.pk }}</TD>
 			{% endifequal %}
 			{% ifequal game.team_away.team.pk team_id %}
-				<TD><a href="../../games/{{game.team_away.pk}}/away/">@ {{game.team_home.team.initials}}</a></TD>
+				<TD><a href="../../games/{{game.pk}}/away/">@ {{game.team_home.team.initials}}</a></TD>
 				<TD>{{ game.team_away.pk }}</TD>
 			{% endifequal %}				
 		{% endfor %}
