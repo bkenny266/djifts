@@ -1,6 +1,7 @@
-<HEAD><TITLE>Hello</TITLE></HEAD>
+{% extends "base.html" %}
+{% block title %} Hello2 {% endblock %}
 
-<HTML>
+{% block content %}
 	<TABLE>
 		<TR>
 			<TD>LINE</TD>
@@ -34,4 +35,5 @@
 		</TR>
 	{% endfor %}
 	</TABLE>
-</HTML>
+
+{% endblock %}

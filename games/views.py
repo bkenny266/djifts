@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 
 
-def test_view(request, game_id, team):
+def game_view(request, game_id, team):
 
 	game_id = int(game_id)
 	game = Game.objects.get(pk=game_id)
