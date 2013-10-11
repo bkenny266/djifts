@@ -1,39 +1,74 @@
 {% extends "base.html" %}
 {% block title %} Hello2 {% endblock %}
+{% block styles %}
+    <link href="/static/tc-assets/css/tablecloth.css" rel="stylesheet">
+    <link href="/static/tc-assets/css/prettify.css" rel="stylesheet"> 
+ {% endblock %}
 
 {% block content %}
-	<TABLE>
-		<TR>
-			<TD>LINE</TD>
-			<TD>GOALS</TD>
-			<TD>SHOTS</TD>
-			<TD>BLOCKS</TD>
-			<TD>HITS</TD>
-			<TD>TOI</TD>
-	{% for result in results%}
-		<TR>
-			<TD>
-			{% for playergame in result.playergames.all %}
-				{{playergame.player.last_name}} - <BR>
+
+<div class="container">
+	<div class="row">
+		<div class="col-md-8">
+			<H1>{{ header }}</H1><BR>
+			<table cellspacing="1" cellpadding="3" class="tablehead" style="background:#CCC;">
+			<thead>
+				<tr class="stathead">
+					<th class="{sorter : false}">LINE</th>
+					<th>GOALS</th>
+					<th>SHOTS</th>
+					<th>BLOCKS</th>
+					<th>HITS</th>
+					<th>TOI</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for result in results%}
+				<tr>
+					<td>
+					{% for playergame in result.playergames.all %}
+						{{playergame.player.last_name}}
+						{% if not forloop.last %}
+							-
+						{% endif %}
+					{% endfor %}
+					</td>
+					<td>
+						{{ result.goals }}
+					</td>
+					<td>
+						{{ result.shots }}
+					</td>
+					<td>
+						{{ result.blocks }}
+					</td>
+					<td>
+						{{ result.hits }}
+					</td>
+					<td>
+						{{ result.ice_time }}
+					</td>
+				</tr>
 			{% endfor %}
-			</TD>
-			<TD>
-				{{ result.goals }}
-			</TD>
-			<TD>
-				{{ result.shots }}
-			</TD>
-			<TD>
-				{{ result.blocks }}
-			</TD>
-			<TD>
-				{{ result.hits }}
-			</TD>
-			<TD>
-				{{ result.ice_time }}
-			</TD>
-		</TR>
-	{% endfor %}
-	</TABLE>
+		</tbody>
+		</table>
+		</div>
+	</div>
+</div>
+
+    <script src="/static/tc-assets/js/jquery.metadata.js"></script>
+    <script src="/static/tc-assets/js/jquery.tablesorter.min.js"></script>
+    <script src="/static/tc-assets/js/jquery.tablecloth.js"></script>
+    
+    <script type="text/javascript" charset="utf-8">
+      $(document).ready(function() {
+        $("table").tablecloth({
+          theme: "stats",
+          striped: true,
+          sortable: true,
+          condensed: true
+        });
+      });
+    </script>
 
 {% endblock %}

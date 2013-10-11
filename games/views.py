@@ -16,7 +16,13 @@ def game_view(request, game_id, team):
 	if team == "away":
 		teamgame = game.team_away
 
+	header = "%s at %s - %s" % (game.team_away, game.team_home, game.date)
+
 	results = teamgame.get_lines()
 
-	return render(request, "game_view.html", {"results" : results})
+	return render(request, "game_view.html", {"results" : results, "header" : header})
 		
+
+def test_bootstrap(request):
+
+	return render(request, "testbootstrap.html")

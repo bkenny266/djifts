@@ -1,8 +1,11 @@
 # Django settings for djifts project.
-import os.path
+import os
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+
+
+PROJECT_PATH = os.path.abspath(os.path.dirname(__name__))
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -73,6 +76,8 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    os.path.join(os.path.dirname(__file__), 'templates').replace('\\', '/'),
+    os.path.join(PROJECT_PATH, 'static')
 )
 
 # List of finder classes that know how to find static files in
@@ -131,6 +136,7 @@ INSTALLED_APPS = (
     #'django_extensions',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
+    'bootstrap3',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )

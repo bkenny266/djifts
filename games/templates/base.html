@@ -1,8 +1,15 @@
 <!DOCTYPE html>
 <HTML>
-<HEAD><TITLE>{% block title %} {% endblock %} </TITLE></HEAD>
+<HEAD>
+	<TITLE>{% block title %} {% endblock %} </TITLE>
+	{% load staticfiles %}
+	<LINK rel="stylesheet" type="text/css" href="{% static "style.css" %}">
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+	{% block styles %} {% endblock %}
+	
+</HEAD>
 
-Inherits base.html
 
 <BODY>
 	{% block content %} {% endblock %}
