@@ -6,7 +6,7 @@ import re
 
 class EventProcessor(object):
 
-	event_types = ['GOAL', 'SHOT', 'HIT', 'BLOCK']
+	event_types = ['GOAL', 'SHOT', 'HIT', 'BLOCK', 'PENL']
 	teams = []
 
 
@@ -19,6 +19,7 @@ class EventProcessor(object):
 		self.shots = []
 		self.blocks = []
 		self.hits = []
+		self.penalties = []
 
 		self.__load_team_names__(soup)
 
@@ -36,12 +37,19 @@ class EventProcessor(object):
 				if event == 'BLOCK':
 					parsed = re.match(r'^[ ]*([A-Z.]+)[^#]+#[^#]+#(\d{1,2})', data_block)
 					team_initials = self.__get_other_team__(parsed.group(1))
+				elif event == 'PENL':
+					parsed = re.match(r'^[ ]*([A-Z.]+)[^#]+#(\d{1,2})[^\d{1,2}]+(\d{1,2})[ ]*min', data_block)
+					team_initials = parsed.group(1)
+					penalty_length = parsed.group(3)
 				else:
 					parsed = re.match(r'^[ ]*([A-Z.]+)[^#]+#(\d{1,2})', data_block)
 					team_initials = parsed.group(1)
 				player_number = parsed.group(2)
 
-				e = Event(event, team_initials, player_number, period, time)
+				if event == 'PENL':
+					e = PenaltyEvent(event, team_initials, player_number, period, time, penalty_length)
+				else:
+					e = Event(event, team_initials, player_number, period, time)
 
 				if event == 'GOAL':
 					self.goals.append(e)
@@ -51,11 +59,13 @@ class EventProcessor(object):
 					self.hits.append(e)
 				elif event == 'BLOCK':
 					self.blocks.append(e)
+				elif event == 'PENL':
+					self.penalties.append(e)
 				else:
 					raise(ValueError, "Invalid event - %s" % event)
 
 	def flatten(self):
-		'''returns a flat list of events sorted by time'''
+		'''returns a flat list of NON-PENALTY events, sorted by time'''
 		flat_list = []
 
 		for goal in self.goals:
@@ -71,6 +81,8 @@ class EventProcessor(object):
 			flat_list.append(hit)
 
 		return sorted(flat_list, key = lambda x: x.event_time_in_seconds)
+
+
 
 	def __load_team_names__(self, soup):
 		#loads team names into the EventProcessor object to use later
@@ -139,3 +151,14 @@ class Event(object):
 		timeMins = int(parsed.group(1))
 		timeSecs = int(parsed.group(2))
 		self.event_time_in_seconds = timeMins * 60 + timeSecs + ((self.event_period * 20 - 20) * 60)
+
+
+class PenaltyEvent(Event):
+	'''special Event subclass - includes additional penalty length and end_time attributes'''
+
+	def __init__(self, event_type, event_team_initials, event_player, event_period, event_time, event_length):
+
+		super(PenaltyEvent, self).__init__(event_type, event_team_initials, event_player, event_period, event_time)
+
+		self.event_length = int(event_length)
+		self.event_end_time_in_seconds = (self.event_length * 60) + self.event_time_in_seconds
