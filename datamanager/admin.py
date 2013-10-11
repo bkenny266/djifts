@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 from games.models import Game
 from .utility import create_game, import_player_data, get_soup, make_lines, get_front_page, import_events
 from .date_util import process_date
+from .eventprocessor import EventProcessor
 
 
 #extends Game model and gives it functionality to create data
@@ -23,7 +24,7 @@ def add_game(game_num):
 #					season_subcategory = 02 (regular season)
 #					game_number = 0420  (game is always four digits)
 #THROWS EXCEPTION if there were any issues retrieving data from the game
-#NO RETURN VALUE
+#RETURNS Boolean indicating success/failure
 
 #!!!STILL NEED TO IMPLEMENT DATABASE ROLLBACK IF UNSUCCESSFUL!!!
 
@@ -42,7 +43,8 @@ def add_game(game_num):
 
 		#import data separately for home and away team
 
-		
+		event_soup = get_soup(game_num, 'play_by_play')
+		events = EventProcessor(event_soup)
 		
 		import_player_data(g.team_home, roster_soup)
 		import_player_data(g.team_away, roster_soup)
@@ -50,7 +52,7 @@ def add_game(game_num):
 		make_lines(g.team_home)
 		make_lines(g.team_away)
 
-		import_events(g)
+		import_events(events)
 
 		return True
 

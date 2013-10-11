@@ -382,7 +382,7 @@ def compare_groups(prev_line, current_line, exclude_time):
 
 
 
-def import_events(game):
+def import_events(events):
 #Pull game event data from an EventProcessor object and add to the database in the Games model.
 
 	def increment_event(teamgame, event):
@@ -418,10 +418,6 @@ def import_events(game):
 		TeamGameEvent.objects.create(playergame=player, event_time=event.event_time_in_seconds, event_type=event.event_type, linegame=line)
 
 
-
-	event_soup = get_soup(game.pk, 'play_by_play')
-
-	events = EventProcessor(event_soup)
 
 	#get objects and initials for home and away teams
 	home_team_initials = game.team_home.team.initials
