@@ -37,14 +37,25 @@ class EventProcessor(object):
 				if event == 'BLOCK':
 					parsed = re.match(r'^[ ]*([A-Z.]+)[^#]+#[^#]+#(\d{1,2})', data_block)
 					team_initials = self.__get_other_team__(parsed.group(1))
+					player_number = parsed.group(2)
 				elif event == 'PENL':
-					parsed = re.match(r'^[ ]*([A-Z.]+)[^#]+#(\d{1,2})[^\d{1,2}]+(\d{1,2})[ ]*min', data_block)
+				#format for penalties is also different
+					try:
+						parsed = re.match(r'^[ ]*([A-Z.]+)[^#]+#(\d{1,2})[^\d{1,2}]+(\d{1,2})[ ]*min', data_block)
+						player_number = parsed.group(2)
+						penalty_length = parsed.group(3)
+					except:
+						#different text format for Too Many Men on The Ice - try this if failed
+						parsed = re.match(r'^[ ]*([A-Z.]+)[ ]*TEAM[^\d{1,2}]+(\d{1,2})[ ]*min', data_block)
+						penalty_length = parsed.group(2)
+						player_numer = 0
 					team_initials = parsed.group(1)
-					penalty_length = parsed.group(3)
+					
 				else:
 					parsed = re.match(r'^[ ]*([A-Z.]+)[^#]+#(\d{1,2})', data_block)
 					team_initials = parsed.group(1)
-				player_number = parsed.group(2)
+					player_number = parsed.group(2)
+					
 
 				if event == 'PENL':
 					e = PenaltyEvent(event, team_initials, player_number, period, time, penalty_length)
