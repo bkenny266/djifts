@@ -4,6 +4,7 @@
 import requests
 import re
 from datetime import datetime, date
+import string
 import ipdb
 from django.db.models import Q
 
@@ -177,8 +178,10 @@ def import_player_data(team, roster_soup):
 		playerName = HumanName(player.text)
 
 		#Strip out player's number from name
-		playerName.last = re.sub("\d+", "", playerName.last).strip()
-		playerObj = Player.objects.get(first_name=playerName.first, last_name=playerName.last)
+		split_string = string.split(playerName.last, " ", 1)
+		number = split_string[0]
+		playerName.last = split_string[1]
+		playerObj = Player.objects.get(first_name=playerName.first, last_name=playerName.last, team=team.team, number=number)
 
 		#Create new object for PlayerGame and save to database
 		playerGameObj = PlayerGame.objects.get(player=playerObj, team=team)
@@ -207,17 +210,18 @@ def import_player_data(team, roster_soup):
 
 def make_lines(teamgame):
 
-	def import_line(line, pos_type):
+	def import_line(line, pos_type='A'):
 
 		try:
 			filtered_line = {'D' : line.filter(playergame__player__position='D'),
 							'F' : line.filter(Q(playergame__player__position='C') | 
 									Q(playergame__player__position='R') | 
-									Q(playergame__player__position='L'))
+									Q(playergame__player__position='L')),
+							'A' : line
 
 			}[pos_type.upper()]
 		except KeyError:
-			print "Invalid paramater in pos_type.  Accepts 'F','D'"
+			print "Invalid paramater in pos_type.  Accepts 'F','D', 'A'"
 
 		line_object = teamgame.get_line(filtered_line)
 		#ipdb.set_trace()
@@ -345,44 +349,9 @@ def compare_groups(prev_line, current_line, exclude_time):
 	return q[0].start_time
 
 
-'''
-		if line_object:
-			line_object.ice_time += shift_length
-			line_object.num_shifts += 1
-			line_object.save()
-
-			LineGameTime.objects.create(linegame = line_object, start_time=shift_start, end_time=shift_end, ice_time=shift_length)
-			print current_line_list
-		else:
-			line_model = LineGame.objects.create(teamgame = teamgame, 
-				num_players = len(current_line_list),
-				ice_time = shift_length,
-				num_shifts = 1,
-				goals = 0,
-				hits = 0,
-				blocks = 0,
-				shots = 0)
-
-			LineGameTime.objects.create(linegame = line_model, start_time=shift_start, end_time=shift_end, ice_time=shift_length)
-
-			for shiftgame in current_line_list:
-				line_model.playergames.add(shiftgame.playergame)
-
-			
-
-		#set a new value prev_end to be used in the next iteration
-		prev_end = lowest_time
-
-		line_list.append(current_line_list)
-
-		#reset line_object for next loop
-		line_object = None
-
-'''
 
 
-
-def import_events(events):
+def import_events(game, events):
 #Pull game event data from an EventProcessor object and add to the database in the Games model.
 
 	def increment_event(teamgame, event):
@@ -457,4 +426,28 @@ def import_date(soup):
 	temp_date = datetime.strptime(date_text, "%B %d, %Y")
 	return date(temp_date.year, temp_date.month, temp_date.day)
 
+
+def consolidate_penalties(penalty_list):
+	consolidated = []
+	prev_end_time = -1
 	
+	for index in range(0, len(penalty_list)):
+		start_time = penalty_list[index].event_time_in_seconds
+		end_time = penalty_list[index].event_end_time_in_seconds
+
+		if index+1 < len(penalty_list) and start_time > prev_end_time:
+			for subindex in range(index+1, len(penalty_list)):
+				if penalty_list[subindex].event_time_in_seconds <= end_time:
+					if penalty_list[subindex].event_end_time_in_seconds > end_time:
+						end_time = penalty_list[subindex].event_end_time_in_seconds
+						if subindex+1 == len(penalty_list):
+							consolidated.append((start_time, end_time))
+				else:
+					consolidated.append((start_time, end_time))
+					prev_end_time = end_time
+					break
+		elif index+1 == len(penalty_list):
+			consolidated.append((start_time, end_time))
+		
+	return consolidated
+

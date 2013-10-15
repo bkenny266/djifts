@@ -1,6 +1,8 @@
 from django.test import TestCase
 from datamanager.utility import *
+from datamanager.eventprocessor import PenaltyEvent
 
+'''
 class GetLowestTest(TestCase):
 
 	fixtures = ['datamanager_testdb.json']
@@ -51,3 +53,30 @@ class CompareGroupsTest(TestCase):
 		shift_list2 = ShiftGame.objects.filter(playergame__team = g.team_home, start_time__lte = 2186, end_time__gt = 2186)
 
 		self.assertEqual(compare_groups(shift_list1, shift_list2, 2186), 2174)
+
+'''
+
+class ConsolidatePenaltiesTest(TestCase):
+
+	def setUp(self):
+		self.penalty_list = []
+		add_list = [(0, 50), (14, 50), (35, 55), (57, 68), (70,100), (90, 110), (110, 120), (122, 130), (130, 150), (155, 160)]
+
+
+		for item in add_list:
+			event = PenaltyEvent("PENL", "TEST", 0, 1, "1:22", 2)
+			event.event_time_in_seconds = item[0]
+			event.event_end_time_in_seconds = item[1]
+			self.penalty_list.append(event)
+
+		self.consolidated = consolidate_penalties(self.penalty_list)
+
+	def test_Is_Consolidation_Working(self):
+		self.assertEqual(self.consolidated[0], (0, 55))
+		self.assertEqual(self.consolidated[1], (57, 68))
+		self.assertEqual(self.consolidated[2], (70, 120))
+		self.assertEqual(self.consolidated[3], (122, 150))
+		self.assertEqual(self.consolidated[4], (155, 160))
+
+	def test_Consolidation_Array_is_Correct_Length(self):
+		self.assertEqual(len(self.consolidated), 5)
