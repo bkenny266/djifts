@@ -20,31 +20,6 @@ from .myfunks import convertToSecs, deleteAfter
 from .eventprocessor import EventProcessor
 
 
-class LineData(object):
-#object used for storing game lines and accompanying data
-	line_list = []
-	start_time = None
-	end_time = None
-	shift_length = None
-
-	def calculate_length(self):
-	#calculates the length of time this shift has been on the ice
-		length = self.end_time - self.start_time
-		if self.start_time == None or self.end_time == None:
-			raise(ValueError("start_time and end_time need to be set"))
-		elif length < 0:
-			raise (ValueError("start_time (%d) is greater than end_time (%d)" % (self.start_time, self.end_time)))
-		else:
-			self.shift_length = length
-
-
-
-def get_front_page():
-	r = requests.get('http://www.nhl.com/ice/gamestats.htm?fetchKey=20133ALLSATAll&sort=gameDate&viewName=teamRTSSreports')
-
-	soup = BeautifulSoup(r.text)
-
-	return soup
 
 def get_soup(game_num, link_type):
 	'''
@@ -71,9 +46,11 @@ def get_soup(game_num, link_type):
 
 	elif link_type == 'play_by_play':
 		r = requests.get('http://www.nhl.com/scores/htmlreports/' + season_string + '/PL' + game_string + '.HTM')
+	elif link_type =='front_page':
+		r = r = requests.get('http://www.nhl.com/ice/gamestats.htm?fetchKey=20133ALLSATAll&sort=gameDate&viewName=teamRTSSreports')
 
 	else:
-		raise(ValueError("Valid link_type arguments are 'roster', 'play_by_play', 'shifts_home', and 'shifts_away'"))
+		raise(ValueError("Valid link_type arguments are 'front_page', 'roster', 'play_by_play', 'shifts_home', and 'shifts_away'"))
 
 
 	soup = BeautifulSoup(r.text)
@@ -210,6 +187,9 @@ def import_player_data(team, roster_soup):
 
 def make_lines(teamgame):
 
+	def is_active_penalty(line):
+		pass
+
 	def import_line(line, pos_type='A'):
 
 		try:
@@ -250,12 +230,6 @@ def make_lines(teamgame):
 			for shiftgame in filtered_line:
 				line_add.playergames.add(shiftgame.playergame)
 
-
-
-
-
-
-
 	###############################################
 
 
@@ -293,8 +267,6 @@ def make_lines(teamgame):
 
 		shift_start = prev_end
 		shift_end = lowest_time
-
-		#if an exception case, need to make sure this line doesn't overlap with next line
 
 
 		shift_length = shift_end - shift_start
@@ -450,4 +422,19 @@ def consolidate_penalties(penalty_list):
 			consolidated.append((start_time, end_time))
 		
 	return consolidated
+
+
+def process_penalties(game, penalty_list):
+
+	TEAMS = [game.team_home, game.team_away]
+
+	penalties = consolidate_penalties(penalty_list)
+
+	for penalty in penalties:
+		for team in TEAMS:
+			pshifts = ShiftGame.objects.filter(playergame__team=team, start_time__gte=penalty[0], end_time__lte=penalty[1])
+			ipdb.set_trace()
+			for shift in pshifts:
+				shift.active_penalty = True
+				shift.save()
 

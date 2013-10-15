@@ -208,6 +208,7 @@ class PlayerGame(models.Model):
 class ShiftGame(models.Model):
 #Shift time data for each PlayerGame
 	playergame = models.ForeignKey(PlayerGame)
+	active_penalty = models.BooleanField(default=False)
 	start_time = models.IntegerField()
 	end_time = models.IntegerField()
 
