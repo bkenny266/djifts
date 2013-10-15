@@ -382,7 +382,7 @@ def compare_groups(prev_line, current_line, exclude_time):
 
 
 
-def import_events(game, events):
+def import_events(events):
 #Pull game event data from an EventProcessor object and add to the database in the Games model.
 
 	def increment_event(teamgame, event):

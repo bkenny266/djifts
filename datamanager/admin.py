@@ -52,7 +52,7 @@ def add_game(game_num):
 		make_lines(g.team_home)
 		make_lines(g.team_away)
 
-		import_events(g, events)
+		import_events(events)
 
 		return True
 
