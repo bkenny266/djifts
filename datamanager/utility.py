@@ -188,7 +188,11 @@ def import_player_data(team, roster_soup):
 def make_lines(teamgame):
 
 	def is_active_penalty(line):
-		pass
+		for shift in line:
+			if not shift.active_penalty:
+				return False
+
+		return True
 
 	def import_line(line, pos_type='A'):
 
@@ -196,9 +200,8 @@ def make_lines(teamgame):
 			filtered_line = {'D' : line.filter(playergame__player__position='D'),
 							'F' : line.filter(Q(playergame__player__position='C') | 
 									Q(playergame__player__position='R') | 
-									Q(playergame__player__position='L')),
+									Q(playergame__player__position='L')), 
 							'A' : line
-
 			}[pos_type.upper()]
 		except KeyError:
 			print "Invalid paramater in pos_type.  Accepts 'F','D', 'A'"
@@ -213,7 +216,12 @@ def make_lines(teamgame):
 				line_object.num_shifts += 1
 				line_object.save()
 
-				LineGameTime.objects.create(linegame = line_object, start_time=shift_start, end_time=shift_end, ice_time=shift_length)
+				lg = LineGameTime(linegame = line_object, start_time=shift_start, end_time=shift_end, ice_time=shift_length)
+
+				if pos_type == 'A':
+					lg.active_penalty = True
+
+				lg.save()
 		else:
 			line_add = LineGame.objects.create(teamgame = teamgame, 
 				num_players = len(filtered_line),
@@ -225,7 +233,12 @@ def make_lines(teamgame):
 				shots = 0,
 				linetype = pos_type)
 
-			LineGameTime.objects.create(linegame = line_add, start_time=shift_start, end_time=shift_end, ice_time=shift_length)
+			lg = LineGameTime(linegame = line_add, start_time=shift_start, end_time=shift_end, ice_time=shift_length)
+
+			if pos_type == 'A':
+				lg.active_penalty = True
+			
+			lg.save()
 
 			for shiftgame in filtered_line:
 				line_add.playergames.add(shiftgame.playergame)
@@ -271,8 +284,12 @@ def make_lines(teamgame):
 
 		shift_length = shift_end - shift_start
 
-		import_line(current_line, 'F')
-		import_line(current_line, 'D')
+
+		if is_active_penalty(current_line):
+			import_line(current_line)
+		else:
+			import_line(current_line, 'F')
+			import_line(current_line, 'D')
 
 		#if exception_case:
 		#	ipdb.set_trace()
@@ -433,7 +450,7 @@ def process_penalties(game, penalty_list):
 	for penalty in penalties:
 		for team in TEAMS:
 			pshifts = ShiftGame.objects.filter(playergame__team=team, start_time__gte=penalty[0], end_time__lte=penalty[1])
-			ipdb.set_trace()
+			#ipdb.set_trace()
 			for shift in pshifts:
 				shift.active_penalty = True
 				shift.save()

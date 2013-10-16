@@ -251,12 +251,13 @@ class LineGame(models.Model):
 			return unicode("Empty (%d)" % self.pk)
 
 class LineGameTime(models.Model):
-#Times for all LineGame objects
+#Shift instances for LineGame objects
 
 	linegame = models.ForeignKey(LineGame)
 	start_time = models.IntegerField()
 	end_time = models.IntegerField()
 	ice_time = models.IntegerField()
+	active_penalty = models.BooleanField(default=False)
 
 	def __unicode__(self):
 		return unicode("%s - %d - %d" % (self.linegame, self.start_time, self.end_time))

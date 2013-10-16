@@ -9,7 +9,7 @@ import ipdb
 
 from bs4 import BeautifulSoup
 from games.models import Game
-from .utility import create_game, import_player_data, get_soup, make_lines, get_front_page, import_events, process_penalties
+from .utility import create_game, import_player_data, get_soup, make_lines, import_events, process_penalties
 from .date_util import process_date
 from .eventprocessor import EventProcessor
 
