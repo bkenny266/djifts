@@ -51,6 +51,7 @@ def add_game(game_num):
 		import_player_data(g.team_away, roster_soup)
 
 		process_penalties(g, events.penalties)
+		#ipdb.set_trace()
 
 		make_lines(g.team_home)
 		make_lines(g.team_away)

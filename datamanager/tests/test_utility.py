@@ -1,4 +1,6 @@
 from django.test import TestCase
+import mock
+
 from datamanager.utility import *
 from datamanager.eventprocessor import PenaltyEvent
 
@@ -80,3 +82,20 @@ class ConsolidatePenaltiesTest(TestCase):
 
 	def test_Consolidation_Array_is_Correct_Length(self):
 		self.assertEqual(len(self.consolidated), 5)
+
+class SplitShiftTest(TestCase):
+
+	def setUp(self):
+		pg = mock.Mock(spec=PlayerGame)
+		pg._state = mock.Mock()
+		pg.id = 99999
+
+		self.shift_start = 20
+		self.shift_end = 50 
+		self.testshift = ShiftGame(playergame = pg, start_time = self.shift_start, end_time = self.shift_end)
+		self.testshift.save()
+
+	def test_Split_Working_Correctly_Normal_Case(self):
+		self.assertEqual(ShiftGame.objects.filter(start_time__gte=self.shift_start, end_time__lte=self.shift_end).count(), 1)
+		split_shift(self.testshift, self.shift_start, self.shift_end)
+		self.assertEqual(ShiftGame.objects.filter(start_time__gte=self.shift_start, end_time__lte=self.shift_end).count(), 2)
