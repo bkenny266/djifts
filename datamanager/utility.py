@@ -20,7 +20,6 @@ from .myfunks import convertToSecs, deleteAfter
 from .eventprocessor import EventProcessor
 
 
-
 def get_soup(game_num, link_type):
 	'''
 	returns a beautiful soup object of different types of game data
@@ -267,22 +266,23 @@ def import_line(line, teamgame, shift_start, shift_end, line_type='O'):
 
 	shift_length = shift_end - shift_start
 
-	line_object = teamgame.get_line(filtered_line)
+	line_object = teamgame.get_line(filtered_line, line_type)
 	#ipdb.set_trace()
 
 	if line_object:
 
-		if (LineGameTime.objects.filter(linegame=line_object, end_time__gte=shift_end).count() == 0):
-			line_object.ice_time += shift_length
-			line_object.num_shifts += 1
-			line_object.save()
+		line_object.ice_time += shift_length
+		line_object.num_shifts += 1
+		line_object.save()
 
-			lg = LineGameTime(linegame = line_object, start_time=shift_start, end_time=shift_end, ice_time=shift_length)
+		lg = LineGameTime(linegame = line_object, start_time=shift_start, end_time=shift_end, ice_time=shift_length)
 
-			if line_type == 'A':
-				lg.active_penalty = True
+		if line_type == 'O':
+			lg.active_penalty = True
 
-			lg.save()
+		lg.save()
+
+
 	else:
 		line_add = LineGame.objects.create(teamgame = teamgame, 
 			num_players = len(filtered_line),
@@ -292,11 +292,11 @@ def import_line(line, teamgame, shift_start, shift_end, line_type='O'):
 			hits = 0,
 			blocks = 0,
 			shots = 0,
-			linetype = line_type)
+			line_type = line_type)
 
 		lg = LineGameTime(linegame = line_add, start_time=shift_start, end_time=shift_end, ice_time=shift_length)
 
-		if line_type == 'A':
+		if line_type == 'O':
 			lg.active_penalty = True
 		
 		lg.save()
@@ -304,6 +304,60 @@ def import_line(line, teamgame, shift_start, shift_end, line_type='O'):
 		for shiftgame in filtered_line:
 			line_add.playergames.add(shiftgame.playergame)
 
+
+def check_penalty_lines(game):
+
+	TEAMS = [game.team_home, game.team_away]
+	#list of lines to add and delete after the processing is complete
+	add_list = []
+	delete_list = []
+
+	for tindex, team in enumerate(TEAMS):
+		lgt_list = LineGameTime.objects.filter(linegame__teamgame=team, active_penalty=True)
+		for lgt in lgt_list:
+			#get the number of players on the current line and the other team's line that is on the ice when this line arrives
+			this_count = lgt.linegame.playergames.count()
+			other_lgt = LineGameTime.objects.get(linegame__teamgame=team.get_other_team(), start_time__lte=lgt.start_time, end_time__gt=lgt.start_time)
+			other_count = other_lgt.linegame.playergames.count()
+
+
+			#if the lines both have 5 players, recalculate both as normal lines (F+D), delete original lines
+			#can do this immediately so we don't need to rerun process on away team loop iteration
+			if this_count == 5 and other_count == 5 and tindex == 0:
+				for thisline in [lgt, other_lgt]:
+					for thistype in ['F', 'D']:
+						add_list.append((thisline.get_shiftgames(thistype), thisline.linegame.teamgame, lgt.start_time, lgt.end_time, thistype))
+
+					delete_list.append(thisline)
+
+			if this_count == 5 and other_count != 5:
+				add_list.append((lgt.get_shiftgames(), team, lgt.start_time, lgt.end_time, 'PP'))
+				delete_list.append(lgt)
+				#ipdb.set_trace()
+
+
+
+	#bulk delete from delete_list
+	for item in delete_list:
+		delete_line_game_time(item)
+
+	#bulk add from add_list
+	for item in add_list:
+		import_line(*item)
+
+
+def delete_line_game_time(lgt):
+	'''cleanly removes a LineGameTime object from the database'''
+	
+	lg = lgt.linegame
+
+	if lg.linegametime_set.count() == 1:
+		#if this is the only LineGameTime in this set, delete the parent LineGame
+		lg.delete()
+	else:
+		lg.num_shifts = lg.num_shifts - 1
+		lg.ice_time = lg.ice_time - lgt.ice_time
+		lgt.delete()
 
 
 def is_new_group(shifts):
@@ -373,6 +427,7 @@ def import_events(game, events):
 			line.blocks += 1
 		elif event.event_type == 'GOAL':
 			line.goals += 1
+			line.shots += 1
 		else:
 			raise(ValueError, "Event type not valid")
 
@@ -448,9 +503,9 @@ def consolidate_penalties(penalty_list):
 
 def process_penalties(game, penalty_list):
 
-	TEAMS = [game.team_home, game.team_away]
-
 	penalties = consolidate_penalties(penalty_list)
+
+	TEAMS = [game.team_home, game.team_away]
 
 	for penalty in penalties:
 		for team in TEAMS:

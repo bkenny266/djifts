@@ -45,6 +45,14 @@ class TeamGame(models.Model):
 		else:
 			raise Error("TeamGame object (%s) is not linked to a game.")
 
+	def get_other_team(self):
+		'''returns the TeamGame object of the other team from this game'''
+		if self.is_home():
+			return self.home.get().team_away
+		if self.is_away():
+			return self.away.get().team_home
+
+
 	def get_roster(self, pos='A'):
 		#returns QuerySet of ALL PLAYERS involed in this TeamGame.  accepts an optional player position argument.
 		#default 'a' (all) argument excludes goalie shift data
@@ -102,7 +110,7 @@ class TeamGame(models.Model):
 		except KeyError:
 			print "Valid arguments are 'all', 'goals', shots', 'hits', and 'blocks'"
 
-	def get_line(self, shiftlist):
+	def get_line(self, shiftlist, line_type):
 		#receives a list of ShiftGames, returns the line object they play on
 		
 		#quietly fail if no items in the list
@@ -119,6 +127,7 @@ class TeamGame(models.Model):
 
 		q = q.filter(num_players = shiftlist.count())
 
+		q = q.filter(line_type=line_type)
 
 		if q.count() == 0:
 			return None
@@ -224,7 +233,7 @@ class LineGame(models.Model):
 
 	playergames = models.ManyToManyField(PlayerGame)
 	teamgame = models.ForeignKey(TeamGame)
-	linetype = models.CharField(max_length=2)
+	line_type = models.CharField(max_length=2)
 
 	num_shifts = models.IntegerField()
 	num_players = models.IntegerField()
@@ -245,7 +254,7 @@ class LineGame(models.Model):
 				if x < count-1:
 					playerlist = playerlist + "-"
 				x += 1
-			statslist = "{0:4d} {1:4d} {2:4d} {3:4d} {4:6d} {5:6d}".format(self.goals, self.shots, self.hits, self.blocks, self.ice_time, self.num_shifts)
+			statslist = "{0:4d} {1:4d} {2:4d} {3:4d} {4:6d} {5:6d} {6:3s}".format(self.goals, self.shots, self.hits, self.blocks, self.ice_time, self.num_shifts, self.line_type)
 			return "{0:50s} {1}".format(playerlist, statslist)
 		else:
 			return unicode("Empty (%d)" % self.pk)
@@ -262,6 +271,21 @@ class LineGameTime(models.Model):
 	def __unicode__(self):
 		return unicode("%s - %d - %d" % (self.linegame, self.start_time, self.end_time))
 
+	def get_shiftgames(self, type_override="N"):
+		'''queries the database to return the shift games for this LineGameTime
+			Can override the line type with ::type_override:: argument'''
+
+		if type_override=="N":
+			line_type = self.linegame.line_type
+		else:
+			line_type = type_override
+
+		return {'O' : ShiftGame.objects.filter(playergame__team=self.linegame.teamgame, start_time__lte=self.start_time, end_time__gt=self.start_time),
+			'F' : ShiftGame.objects.filter(playergame__team=self.linegame.teamgame, start_time__lte=self.start_time, end_time__gt=self.start_time).filter(models.Q(playergame__player__position='C')| 
+								   models.Q(playergame__player__position='R')| 
+								   models.Q(playergame__player__position='L')),
+			'D' : ShiftGame.objects.filter(playergame__team=self.linegame.teamgame, start_time__lte=self.start_time, end_time__gt=self.start_time, playergame__player__position='D')
+			}[line_type]
 
 class TeamGameEvent(models.Model):
 #Statistical events from a TeamGame that are pulled from the game's Play-by-Play data

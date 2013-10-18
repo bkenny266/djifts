@@ -9,7 +9,7 @@ import ipdb
 
 from bs4 import BeautifulSoup
 from games.models import Game
-from .utility import create_game, import_player_data, get_soup, make_lines, import_events, process_penalties
+from .utility import create_game, import_player_data, get_soup, make_lines, import_events, process_penalties, check_penalty_lines
 from .date_util import process_date
 from .eventprocessor import EventProcessor
 
@@ -55,6 +55,8 @@ def add_game(game_num):
 
 		make_lines(g.team_home)
 		make_lines(g.team_away)
+
+		check_penalty_lines(g)
 
 		import_events(g, events)
 
