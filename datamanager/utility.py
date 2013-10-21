@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #DATA MANAGER APP - utility.py
 #functions used by admin.py for creating data.
 
@@ -46,7 +47,7 @@ def get_soup(game_num, link_type):
 	elif link_type == 'play_by_play':
 		r = requests.get('http://www.nhl.com/scores/htmlreports/' + season_string + '/PL' + game_string + '.HTM')
 	elif link_type =='front_page':
-		r = r = requests.get('http://www.nhl.com/ice/gamestats.htm?fetchKey=20133ALLSATAll&sort=gameDate&viewName=teamRTSSreports')
+		r = requests.get('http://www.nhl.com/ice/gamestats.htm?fetchKey=20133ALLSATAll&sort=gameDate&viewName=teamRTSSreports')
 
 	else:
 		raise(ValueError("Valid link_type arguments are 'front_page', 'roster', 'play_by_play', 'shifts_home', and 'shifts_away'"))
@@ -116,7 +117,7 @@ def import_player_data(team, roster_soup):
 
 		position = roster.contents[i].contents[POSITION_INDEX].text.encode('ASCII')
 
-		name = roster.contents[i].contents[NAME_INDEX].text.encode('ASCII')
+		name = roster.contents[i].contents[NAME_INDEX].text.encode('utf-8')
 		hname = HumanName(name)
 		first_name = hname.first
 		last_name = hname.last
@@ -137,7 +138,7 @@ def import_player_data(team, roster_soup):
 			#Check if new player or data error
 			p = Player.objects.create(first_name=first_name, last_name=last_name, position=position, number=number, team=team.team)
 			PlayerGame.objects.create(player=p, team=team)
-			print "Added - " + p.first_name + " " + p.last_name + " (" + p.position + ") " + team.team.initials 
+			#print "Added - " + p.first_name + " " + p.last_name + " (" + p.position + ") " + team.team.initials 
 	
 	
 	###GET SHIFTS
@@ -168,7 +169,11 @@ def import_player_data(team, roster_soup):
 
 		#If 6 items in shift_list object, it matches the structure of valid shift data
 		while(len(shift_list) == 6):
-			period = int(shift_list[1].text)
+			period = shift_list[1].text
+			if period == "OT":
+				period = 4
+			else:
+				period = int(period)
 			timeOn = deleteAfter(shift_list[2].text, '/')
 			timeOn = convertToSecs(timeOn, period)
 			timeOff = deleteAfter(shift_list[3].text, '/')
@@ -323,12 +328,11 @@ def check_penalty_lines(game):
 
 			#if the lines both have 5 players, recalculate both as normal lines (F+D), delete original lines
 			#can do this immediately so we don't need to rerun process on away team loop iteration
-			if this_count == 5 and other_count == 5 and tindex == 0:
-				for thisline in [lgt, other_lgt]:
-					for thistype in ['F', 'D']:
-						add_list.append((thisline.get_shiftgames(thistype), thisline.linegame.teamgame, lgt.start_time, lgt.end_time, thistype))
+			if this_count == 5 and other_count == 5:
+				for thistype in ['F', 'D']:
+					add_list.append((lgt.get_shiftgames(thistype), lgt.linegame.teamgame, lgt.start_time, lgt.end_time, thistype))
 
-					delete_list.append(thisline)
+				delete_list.append(lgt)
 
 			if this_count == 5 and other_count != 5:
 				add_list.append((lgt.get_shiftgames(), team, lgt.start_time, lgt.end_time, 'PP'))

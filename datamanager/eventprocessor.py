@@ -28,51 +28,52 @@ class EventProcessor(object):
 			
 			for current_object in type_objects:
 				#period is 6 siblings back
-				period = current_object.previous_sibling.previous_sibling.previous_sibling.previous_sibling.previous_sibling.previous_sibling.text
+				period = int(current_object.previous_sibling.previous_sibling.previous_sibling.previous_sibling.previous_sibling.previous_sibling.text)
 				time = current_object.previous_sibling.previous_sibling.next_element
 				data_block = current_object.next_sibling.next_sibling.text
 
-				#format for shot blocks is different (blocking player appears second 
-				#and also team referes to the team that was BLOCKED, so need to swap that)
-				if event == 'BLOCK':
-					parsed = re.match(r'^[ ]*([A-Z.]+)[^#]+#[^#]+#(\d{1,2})', data_block)
-					team_initials = self.__get_other_team__(parsed.group(1))
-					player_number = parsed.group(2)
-				elif event == 'PENL':
-					try:
-						parsed = re.match(r'^[ ]*([A-Z.]+)[^#]+#(\d{1,2})[^\d{1,2}]+(\d{1,2})[ ]*min', data_block)
-						team_initials = parsed.group(1)
-						penalty_length = parsed.group(3)
+				if period < 5:
+					#format for shot blocks is different (blocking player appears second 
+					#and also team referes to the team that was BLOCKED, so need to swap that)
+					if event == 'BLOCK':
+						parsed = re.match(r'^[ ]*([A-Z.]+)[^#]+#[^#]+#(\d{1,2})', data_block)
+						team_initials = self.__get_other_team__(parsed.group(1))
 						player_number = parsed.group(2)
-					except:
-						#if TOO MANY MEN ON ICE penalty, format is different, so try this instead
-						parsed = re.match(r'^[ ]*([A-Z.]+)[ ]*TEAM[^\d{1,2}]+(\d{1,2})* min', data_block)
+					elif event == 'PENL':
+						try:
+							parsed = re.match(r'^[ ]*([A-Z.]+)[^#]+#(\d{1,2})[^\d{1,2}]+(\d{1,2})[ ]*min', data_block)
+							team_initials = parsed.group(1)
+							penalty_length = parsed.group(3)
+							player_number = parsed.group(2)
+						except:
+							#if TOO MANY MEN ON ICE penalty, format is different, so try this instead
+							parsed = re.match(r'^[ ]*([A-Z.]+)[ ]*TEAM[^\d{1,2}]+(\d{1,2})* min', data_block)
+							team_initials = parsed.group(1)
+							penalty_length = parsed.group(2)
+							player_number = 0
+					else:
+						parsed = re.match(r'^[ ]*([A-Z.]+)[^#]+#(\d{1,2})', data_block)
 						team_initials = parsed.group(1)
-						penalty_length = parsed.group(2)
-						player_number = 0
-				else:
-					parsed = re.match(r'^[ ]*([A-Z.]+)[^#]+#(\d{1,2})', data_block)
-					team_initials = parsed.group(1)
-					player_number = parsed.group(2)
+						player_number = parsed.group(2)
 
 
-				if event == 'PENL':
-					e = PenaltyEvent(event, team_initials, player_number, period, time, penalty_length)
-				else:
-					e = Event(event, team_initials, player_number, period, time)
+					if event == 'PENL':
+						e = PenaltyEvent(event, team_initials, player_number, period, time, penalty_length)
+					else:
+						e = Event(event, team_initials, player_number, period, time)
 
-				if event == 'GOAL':
-					self.goals.append(e)
-				elif event == 'SHOT':
-					self.shots.append(e)
-				elif event == 'HIT':
-					self.hits.append(e)
-				elif event == 'BLOCK':
-					self.blocks.append(e)
-				elif event == 'PENL':
-					self.penalties.append(e)
-				else:
-					raise(ValueError, "Invalid event - %s" % event)
+					if event == 'GOAL':
+						self.goals.append(e)
+					elif event == 'SHOT':
+						self.shots.append(e)
+					elif event == 'HIT':
+						self.hits.append(e)
+					elif event == 'BLOCK':
+						self.blocks.append(e)
+					elif event == 'PENL':
+						self.penalties.append(e)
+					else:
+						raise(ValueError, "Invalid event - %s" % event)
 
 	def flatten(self):
 		'''returns a flat list of NON-PENALTY events, sorted by time'''
@@ -136,7 +137,7 @@ class Event(object):
 	def __init__(self, event_type, event_team_initials, event_player, event_period, event_time):
 		self.event_type = event_type
 		self.event_player = int(event_player)
-		self.event_period = int(event_period)
+		self.event_period = event_period
 		self.event_time = event_time
 
 		if event_team_initials == "L.A":

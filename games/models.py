@@ -164,7 +164,14 @@ class TeamGame(models.Model):
 
 		return self.linegame_set.filter(goals__gte=goals, shots__gte=shots, hits__gte=hits, blocks__gte=blocks).order_by(sort_type, '-ice_time')
 
+	def line_at_time(self, time, position="A"):
 
+		q = LineGameTime.objects.filter(linegame__teamgame=self, start_time__lte=time, end_time__gt=time)
+
+		if position != 'A':
+			q.filter(linegame__line_type=position)
+
+		return q
 
 class Game(models.Model):
 #Game model represents each game played.
