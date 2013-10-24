@@ -6,12 +6,20 @@
  {% endblock %}
 
 {% block content %}
+<div class="col-md-8">
+<H1>{{ header }}</H1><BR>
+</div>
 
 <div class="container">
 	<div class="row">
 		<div class="col-md-8">
-			<H1>{{ header }}</H1><BR>
-			<table cellspacing="1" cellpadding="3" class="tablehead" style="background:#CCC;">
+			<div class="navbar-header">Line type:
+			<div class="btn-group btn-group-sm">
+				<button class="btn btn-default">All<button class="btn btn-success">F</button><button class="btn btn-default">D</button><button class="btn btn-default">PP</button>
+			</div>
+		</div>
+
+			<table cellspacing="1" cellpadding="3" class="tablehead" style="background:#CCC;" id="table_f">
 			<thead>
 				<tr class="stathead">
 					<th class="{sorter : false}">LINE</th>
@@ -23,7 +31,90 @@
 				</tr>
 			</thead>
 			<tbody>
-			{% for result in results%}
+			{% for result in results_f%}
+				<tr>
+					<td>
+					{% for playergame in result.playergames.all %}
+						{{playergame.player.last_name}}
+						{% if not forloop.last %}
+							-
+						{% endif %}
+					{% endfor %}
+					</td>
+					<td>
+						{{ result.goals }}
+					</td>
+					<td>
+						{{ result.shots }}
+					</td>
+					<td>
+						{{ result.blocks }}
+					</td>
+					<td>
+						{{ result.hits }}
+					</td>
+					<td>
+						{{ result.ice_time }}
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+		</table>
+			<table cellspacing="1" cellpadding="3" class="tablehead" style="background:#CCC;" id="table_d">
+			<thead>
+				<tr class="stathead">
+					<th class="{sorter : false}">LINE</th>
+					<th>GOALS</th>
+					<th>SHOTS</th>
+					<th>BLOCKS</th>
+					<th>HITS</th>
+					<th>TOI</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for result in results_d%}
+				<tr>
+					<td>
+					{% for playergame in result.playergames.all %}
+						{{playergame.player.last_name}}
+						{% if not forloop.last %}
+							-
+						{% endif %}
+					{% endfor %}
+					</td>
+					<td>
+						{{ result.goals }}
+					</td>
+					<td>
+						{{ result.shots }}
+					</td>
+					<td>
+						{{ result.blocks }}
+					</td>
+					<td>
+						{{ result.hits }}
+					</td>
+					<td>
+						{{ result.ice_time }}
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+		</table>
+
+		<table cellspacing="1" cellpadding="3" class="tablehead" style="background:#CCC;" id="table_pk">
+			<thead>
+				<tr class="stathead">
+					<th class="{sorter : false}">LINE</th>
+					<th>GOALS</th>
+					<th>SHOTS</th>
+					<th>BLOCKS</th>
+					<th>HITS</th>
+					<th>TOI</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for result in results_pp%}
 				<tr>
 					<td>
 					{% for playergame in result.playergames.all %}
@@ -70,5 +161,6 @@
         });
       });
     </script>
+
 
 {% endblock %}

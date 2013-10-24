@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 GAMES - models.py
 '''
@@ -20,7 +21,7 @@ class TeamGame(models.Model):
 
 
 	def __unicode__(self):
-		return "%s" % (self.team.name)
+		return u"%s" % (self.team.name)
 
 	def is_home(self):
 	#return True if TeamGame object is 'home team'
@@ -191,7 +192,7 @@ class Game(models.Model):
 
 
 	def __unicode__(self):
-		return "%s (%s @ %s)" % (self.game_id, self.team_away.team.initials, self.team_home.team.initials)
+		return u"%s (%s @ %s)" % (self.game_id, self.team_away.team.initials, self.team_home.team.initials)
 
 	def roster_home(self, pos = 'a'):
 		return self.team_home.get_roster(pos)
@@ -218,7 +219,7 @@ class PlayerGame(models.Model):
 		ordering = ['team', 'player__last_name']
 		
 	def __unicode__(self):
-		return "%s - %s" % (self.team.team, self.player)
+		return u"%s - %s" % (self.team.team, self.player)
 
 
 class ShiftGame(models.Model):
@@ -232,7 +233,7 @@ class ShiftGame(models.Model):
 		ordering = ['playergame__team', 'end_time']
 
 	def __unicode__(self):
-		return '(%s, %d, %d)' % (self.playergame.player.last_name, self.start_time, self.end_time)
+		return u'(%s, %d, %d)' % (self.playergame.player.last_name, self.start_time, self.end_time)
 
 
 class LineGame(models.Model):

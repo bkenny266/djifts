@@ -65,8 +65,8 @@ def create_game(game_num, roster_soup):
 
 	#pull team name data from txt - first two instances of class teamHeading
 	teams = roster_soup.find_all('td', class_ = "teamHeading")
-	away_name = teams[0].text.encode('ASCII')
-	home_name = teams[1].text.encode('ASCII')
+	away_name = teams[0].text.encode('utf-8')
+	home_name = teams[1].text.encode('utf-8')
 
 	#Creates TeamGame objects home, away
 	away = TeamGame.objects.create(team = Team.objects.get(name=away_name))
@@ -115,14 +115,14 @@ def import_player_data(team, roster_soup):
 	#Iterates over the 'roster', skipping every other item (null tags)
 	for i in range(START_ROSTER, len(roster), 2):
 
-		position = roster.contents[i].contents[POSITION_INDEX].text.encode('ASCII')
+		position = roster.contents[i].contents[POSITION_INDEX].text.encode('utf-8')
 
 		name = roster.contents[i].contents[NAME_INDEX].text.encode('utf-8')
 		hname = HumanName(name)
 		first_name = hname.first
 		last_name = hname.last
 
-		number = roster.contents[i].contents[NUMBER_INDEX].text.encode('ASCII')
+		number = roster.contents[i].contents[NUMBER_INDEX].text.encode('utf-8')
 
 		#Checks if player exists or if multiple players with this name.  
 		#If player does not exist, add to Player database and PlayerGame database.
@@ -158,7 +158,7 @@ def import_player_data(team, roster_soup):
 		split_string = string.split(playerName.last, " ", 1)
 		number = split_string[0]
 		playerName.last = split_string[1]
-		playerObj = Player.objects.get(first_name=playerName.first, last_name=playerName.last, team=team.team, number=number)
+		playerObj = Player.objects.get(last_name=playerName.last, team=team.team, number=number)
 
 		#Create new object for PlayerGame and save to database
 		playerGameObj = PlayerGame.objects.get(player=playerObj, team=team)
