@@ -14,12 +14,53 @@
 	<div class="row">
 		<div class="col-md-8">
 			<div class="navbar-header">Line type:
-			<div class="btn-group btn-group-sm">
-				<button class="btn btn-default">All<button class="btn btn-success">F</button><button class="btn btn-default">D</button><button class="btn btn-default">PP</button>
+			<div class="btn-group btn-group-sm" id="line_select_group">
+				<button class="btn btn-default" table="table_all">All<button class="btn btn-default" table="table_f">F</button><button class="btn btn-default" table="table_d">D</button><button class="btn btn-default" table="table_pp">PP</button>
 			</div>
 		</div>
 
-			<table cellspacing="1" cellpadding="3" class="tablehead" style="background:#CCC;" id="table_f">
+			<table cellspacing="1" cellpadding="3" class="tablehead hide" style="background:#CCC;" id="table_all">
+			<thead>
+				<tr class="stathead">
+					<th class="{sorter : false}">LINE</th>
+					<th>GOALS</th>
+					<th>SHOTS</th>
+					<th>BLOCKS</th>
+					<th>HITS</th>
+					<th>TOI</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for result in results_all%}
+				<tr>
+					<td>
+					{% for playergame in result.playergames.all %}
+						{{playergame.player.last_name}}
+						{% if not forloop.last %}
+							-
+						{% endif %}
+					{% endfor %}
+					</td>
+					<td>
+						{{ result.goals }}
+					</td>
+					<td>
+						{{ result.shots }}
+					</td>
+					<td>
+						{{ result.blocks }}
+					</td>
+					<td>
+						{{ result.hits }}
+					</td>
+					<td>
+						{{ result.ice_time }}
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+		</table>
+			<table cellspacing="1" cellpadding="3" class="tablehead hide" style="background:#CCC;" id="table_f">
 			<thead>
 				<tr class="stathead">
 					<th class="{sorter : false}">LINE</th>
@@ -60,7 +101,7 @@
 			{% endfor %}
 		</tbody>
 		</table>
-			<table cellspacing="1" cellpadding="3" class="tablehead" style="background:#CCC;" id="table_d">
+			<table cellspacing="1" cellpadding="3" class="tablehead hide" style="background:#CCC;" id="table_d">
 			<thead>
 				<tr class="stathead">
 					<th class="{sorter : false}">LINE</th>
@@ -102,7 +143,7 @@
 		</tbody>
 		</table>
 
-		<table cellspacing="1" cellpadding="3" class="tablehead" style="background:#CCC;" id="table_pk">
+		<table cellspacing="1" cellpadding="3" class="tablehead hide" style="background:#CCC;" id="table_pp">
 			<thead>
 				<tr class="stathead">
 					<th class="{sorter : false}">LINE</th>
@@ -159,6 +200,34 @@
           sortable: true,
           condensed: true
         });
+
+        function turnOn(element) {
+        	element.addClass("btn-success");
+        	element.removeClass("btn-default");
+        	$("#" + element.attr("table")).removeClass("hide");
+        };
+
+        function turnOff(element) {
+        	element.removeClass("btn-success");
+        	element.addClass("btn-default");
+        	$("#" + element.attr("table")).addClass("hide");
+
+        };
+
+        current = $("button[table='table_f']");
+
+        $("#line_select_group>button").click( function() { 
+        	if (current !== $(this)){
+        		turnOff(current);
+        		current = $(this);
+        		turnOn(current);
+        	}
+
+        });
+
+
+        turnOn(current);
+
       });
     </script>
 
