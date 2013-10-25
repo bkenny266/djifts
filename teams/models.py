@@ -20,9 +20,15 @@ class Team(models.Model):
 		if num_games > games_played:
 			num_games = games_played
 
-		games_set = games.models.TeamGame.objects.filter(team__initials=self.initials).reverse()[:num_games]
+		games_q = games.models.TeamGame.objects.filter(team__initials=self.initials).reverse()[:num_games]
 
-		return games_set
+		game_set = []
+
+		for game in games_q:
+			game_set.append(game.pk)
+
+		return game_set
+
 
 	def combine_game_lines(self, num_games):
 	#combines the line data from the last ::num_games:: into a single queryset
