@@ -201,6 +201,7 @@
           condensed: true
         });
 
+		//Switch for turning the different tables on and off
         function turnOn(element) {
         	element.addClass("btn-success");
         	element.removeClass("btn-default");
@@ -214,8 +215,10 @@
 
         };
 
+        //Set the Forwards table as the currently activated table
         current = $("button[table='table_f']");
 
+        //Event handler for activating tables
         $("#line_select_group>button").click( function() { 
         	if (current !== $(this)){
         		turnOff(current);
@@ -225,7 +228,7 @@
 
         });
 
-
+        //Turn on the Forwards table
         turnOn(current);
 
       });

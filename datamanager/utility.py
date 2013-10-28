@@ -13,7 +13,7 @@ from django.db.models import Q
 from bs4 import BeautifulSoup
 from nameparser import HumanName
 
-from games.models import Game, TeamGame, PlayerGame, ShiftGame, TeamGameEvent, LineGame, LineGameTime
+from games.models import Game, TeamGame, PlayerGame, ShiftGame, TeamGameEvent, LineGame, LineGameTime, Line
 from players.models import Player
 from teams.models import Team
 
@@ -128,7 +128,7 @@ def import_player_data(team, roster_soup):
 		#If player does not exist, add to Player database and PlayerGame database.
 		#If player exists, add to PlayerGame database.
 		try:
-			p = Player.objects.get(first_name=first_name, last_name=last_name, team=team.team, number=number)
+			p = Player.objects.get(last_name=last_name, team=team.team, number=number, position=position)
 			PlayerGame.objects.create(player=p, team=team)
 		except Player.MultipleObjectsReturned:
 			#Check if multiple players in the league or if player has been traded
@@ -256,31 +256,31 @@ def make_lines(teamgame):
 		#ipdb.set_trace()
 
 
-def import_line(line, teamgame, shift_start, shift_end, line_type='O'):
+def import_line(shift_set, teamgame, shift_start, shift_end, line_type='O'):
 
 	try:
-		filtered_line = {'D' : line.filter(playergame__player__position='D'),
-						'F' : line.filter(Q(playergame__player__position='C') | 
+		filtered_shift_set = {'D' : shift_set.filter(playergame__player__position='D'),
+						'F' : shift_set.filter(Q(playergame__player__position='C') | 
 								Q(playergame__player__position='R') | 
 								Q(playergame__player__position='L')), 
-						'O' : line, 
-						'PP' : line
+						'O' : shift_set, 
+						'PP' : shift_set
 		}[line_type.upper()]
 	except KeyError:
 		print "Invalid paramater in line_type.  Accepts 'F','D', 'O', 'PP'"
 
 	shift_length = shift_end - shift_start
 
-	line_object = teamgame.get_line(filtered_line, line_type)
+	linegame_object = teamgame.get_line(filtered_shift_set, line_type)
 	#ipdb.set_trace()
 
-	if line_object:
+	if linegame_object:
 
-		line_object.ice_time += shift_length
-		line_object.num_shifts += 1
-		line_object.save()
+		linegame_object.ice_time += shift_length
+		linegame_object.num_shifts += 1
+		linegame_object.save()
 
-		lg = LineGameTime(linegame = line_object, start_time=shift_start, end_time=shift_end, ice_time=shift_length)
+		lg = LineGameTime(linegame = linegame_object, start_time=shift_start, end_time=shift_end, ice_time=shift_length)
 
 		if line_type == 'O':
 			lg.active_penalty = True
@@ -290,7 +290,7 @@ def import_line(line, teamgame, shift_start, shift_end, line_type='O'):
 
 	else:
 		line_add = LineGame.objects.create(teamgame = teamgame, 
-			num_players = len(filtered_line),
+			num_players = len(filtered_shift_set),
 			ice_time = shift_length,
 			num_shifts = 1,
 			goals = 0,
@@ -306,7 +306,7 @@ def import_line(line, teamgame, shift_start, shift_end, line_type='O'):
 		
 		lg.save()
 
-		for shiftgame in filtered_line:
+		for shiftgame in filtered_shift_set:
 			line_add.playergames.add(shiftgame.playergame)
 
 

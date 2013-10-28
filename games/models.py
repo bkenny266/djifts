@@ -235,16 +235,22 @@ class ShiftGame(models.Model):
 	def __unicode__(self):
 		return u'(%s, %d, %d)' % (self.playergame.player.last_name, self.start_time, self.end_time)
 
+class Line(models.Model):
+	players = models.ManyToManyField(Player)
+	num_players = models.IntegerField()
+	line_type = models.CharField(max_length=2)
+	team = models.ForeignKey(Team)
 
 class LineGame(models.Model):
 #Line data for each TeamGame
 
+	#line = models.ForeignKey(Line)
 	playergames = models.ManyToManyField(PlayerGame)
 	teamgame = models.ForeignKey(TeamGame)
+	num_players = models.IntegerField()
 	line_type = models.CharField(max_length=2)
 
 	num_shifts = models.IntegerField()
-	num_players = models.IntegerField()
 	ice_time = models.IntegerField()
 	goals = models.IntegerField()
 	shots = models.IntegerField()
