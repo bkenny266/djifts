@@ -42,14 +42,16 @@ Games:  Includes models and views for interacting with data on a "game" level.
 
 	-models.py - Data models and methods for Teams, Players, Shift Times, and Lines. 
 	
-	-views.py - Not yet implemented
+	-views.py - Have implemented views for displaying tables of line combinations and
+					statistics for the different types of lines (All, F, D, PP).
 	
 
 Teams:  Includes models and views for interacting with data on a "team" level.
 
 	-models.py - Data model to represent each team in the league.
 	
-	-views.py - Not yet implemented
+	-views.py - Have implemented views for displaying the teams as a list and
+					once a team is selected, to display the list of games they have played.
 	
 	
 Players:  Includes models and views for interacting with data on a "player" level.
@@ -63,21 +65,16 @@ Players:  Includes models and views for interacting with data on a "player" leve
 	
 Next Steps
 ----------
--Need to add a date field to the Game model.
--Currently only generating sets of 5 skaters on the ice.  This isn't particularly representative
-of how lines work in hockey.  Need to further categorize lines into combinations of 3 forwards, 
-2 defensemen, power play units, and penalty kill units.
--Known bug in line generating method.  We aren't calculating a new line when players 
-come on the ice without replace another player going off the ice.  This can occur at 
-the end of a penalty or at the end of a game when the goalie is pulled.  
--Improve code to make it pep8 compliant.
--Need to implement testing structure across the board.  Unit tests, integration tests, etc.
+-Still need to nail down a few rare bugs in the line generating, though it seems to work correctly most of the time.  Need to implement rigorous testing on this to be sure no other issues exist.
 -Need to be particularly careful and vigilent about confirming the data being downloaded 
 to the database is correct and implement a rollback system in the event of failure.  
 Unfortunately, we're forced to use data scraping on the NHL.com website to get this data, 
 and the smallest of HTML changes on their end can ruin this whole operation.
+-Improve templates and site usability.  Need to learn more about Bootstrap and figure out
+how to design an appealing front-end for the website.
+-Improve code to make it pep8 compliant.
+-Need to implement testing structure across the board.  Unit tests, integration tests, etc.
 -Implement a system to continuously scan the NHL games page and automatically download data
 for new games as they occur.
--Views for each application
--Front end webpage design
+
 
