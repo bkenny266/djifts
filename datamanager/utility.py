@@ -280,16 +280,9 @@ def import_line(shift_set, teamgame, shift_start, shift_end, line_type='O'):
 		linegame_object.num_shifts += 1
 		linegame_object.save()
 
-		lg = LineGameTime(linegame = linegame_object, start_time=shift_start, end_time=shift_end, ice_time=shift_length)
-
-		if line_type == 'O':
-			lg.active_penalty = True
-
-		lg.save()
-
 
 	else:
-		line_add = LineGame.objects.create(teamgame = teamgame, 
+		linegame_object = LineGame.objects.create(teamgame = teamgame, 
 			num_players = len(filtered_shift_set),
 			ice_time = shift_length,
 			num_shifts = 1,
@@ -299,15 +292,17 @@ def import_line(shift_set, teamgame, shift_start, shift_end, line_type='O'):
 			shots = 0,
 			line_type = line_type)
 
-		lg = LineGameTime(linegame = line_add, start_time=shift_start, end_time=shift_end, ice_time=shift_length)
-
-		if line_type == 'O':
-			lg.active_penalty = True
-		
-		lg.save()
-
 		for shiftgame in filtered_shift_set:
-			line_add.playergames.add(shiftgame.playergame)
+			linegame_object.playergames.add(shiftgame.playergame)
+
+
+	lg = LineGameTime(linegame = linegame_object, start_time=shift_start, end_time=shift_end, ice_time=shift_length)
+
+	if line_type == 'O':
+		lg.active_penalty = True
+		
+	lg.save()
+
 
 
 def check_penalty_lines(game):
