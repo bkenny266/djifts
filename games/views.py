@@ -18,10 +18,10 @@ def game_view(request, game_id, team):
 
 	header = "%s at %s - %s" % (game.team_away, game.team_home, game.date)
 
-	results_all = teamgame.get_lines().exclude(line_type="O")
-	results_f = results_all.filter(line_type="F")
-	results_d = results_all.filter(line_type="D")
-	results_pp = results_all.filter(line_type="PP")
+	results_all = teamgame.get_lines().exclude(line__line_type="O")
+	results_f = results_all.filter(line__line_type="F")
+	results_d = results_all.filter(line__line_type="D")
+	results_pp = results_all.filter(line__line_type="PP")
 
 	return render(request, "game_view.html", {"results_all" : results_all, "results_f" : results_f, "results_d" : results_d, "results_pp" : results_pp, "header" : header})
 		

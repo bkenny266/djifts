@@ -282,18 +282,36 @@ def import_line(shift_set, teamgame, shift_start, shift_end, line_type='O'):
 
 
 	else:
+		#check if this Line exists in database, and if not, create it
+		line = Line.objects.filter(team=teamgame.team, line_type=line_type, num_players=len(filtered_shift_set))
+		for shiftgame in filtered_shift_set:
+			line = line.filter(players=shiftgame.playergame.player)
+
+		if line.count() == 0:
+			line = Line(num_players=len(filtered_shift_set), line_type=line_type, team=teamgame.team)
+			line.save()
+			for shiftgame in filtered_shift_set:
+				line.players.add(shiftgame.playergame.player)
+
+		elif line.count() == 1:
+			line = line[0]
+		else:
+			raise(ValueError("More than one database match on Line"))
+
+
 		linegame_object = LineGame.objects.create(teamgame = teamgame, 
-			num_players = len(filtered_shift_set),
 			ice_time = shift_length,
 			num_shifts = 1,
 			goals = 0,
 			hits = 0,
 			blocks = 0,
 			shots = 0,
-			line_type = line_type)
+			line = line)
 
 		for shiftgame in filtered_shift_set:
 			linegame_object.playergames.add(shiftgame.playergame)
+
+
 
 
 	lg = LineGameTime(linegame = linegame_object, start_time=shift_start, end_time=shift_end, ice_time=shift_length)
@@ -352,7 +370,11 @@ def delete_line_game_time(lgt):
 
 	if lg.linegametime_set.count() == 1:
 		#if this is the only LineGameTime in this set, delete the parent LineGame
-		lg.delete()
+		l = lg.line
+		if l.linegame.count() == 1:
+			l.delete()
+		else:
+			lg.delete()
 	else:
 		lg.num_shifts = lg.num_shifts - 1
 		lg.ice_time = lg.ice_time - lgt.ice_time

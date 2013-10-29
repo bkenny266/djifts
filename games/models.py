@@ -126,9 +126,9 @@ class TeamGame(models.Model):
 		for shift_index in range(1, num_players):
 			q = q.filter(playergames = shiftlist[shift_index].playergame)
 
-		q = q.filter(num_players = shiftlist.count())
+		q = q.filter(line__num_players = shiftlist.count())
 
-		q = q.filter(line_type=line_type)
+		q = q.filter(line__line_type=line_type)
 
 		if q.count() == 0:
 			return None
@@ -170,7 +170,7 @@ class TeamGame(models.Model):
 		q = LineGameTime.objects.filter(linegame__teamgame=self, start_time__lte=time, end_time__gt=time)
 
 		if position != 'A':
-			q.filter(linegame__line_type=position)
+			q.filter(linegame__line__line_type=position)
 
 		return q
 
@@ -241,14 +241,22 @@ class Line(models.Model):
 	line_type = models.CharField(max_length=2)
 	team = models.ForeignKey(Team)
 
+	def __unicode__(self):
+		playerlist = ''
+		x = 0
+		for player in self.players.all():
+			playerlist = playerlist + '%s - ' % player.last_name
+			x += 1
+			
+		playerlist = playerlist + self.line_type
+		return playerlist
+
 class LineGame(models.Model):
 #Line data for each TeamGame
 
-	#line = models.ForeignKey(Line)
+	line = models.ForeignKey(Line, related_name='linegame')
 	playergames = models.ManyToManyField(PlayerGame)
 	teamgame = models.ForeignKey(TeamGame)
-	num_players = models.IntegerField()
-	line_type = models.CharField(max_length=2)
 
 	num_shifts = models.IntegerField()
 	ice_time = models.IntegerField()
@@ -268,7 +276,7 @@ class LineGame(models.Model):
 				if x < count-1:
 					playerlist = playerlist + "-"
 				x += 1
-			statslist = "{0:4d} {1:4d} {2:4d} {3:4d} {4:6d} {5:6d} {6:3s}".format(self.goals, self.shots, self.hits, self.blocks, self.ice_time, self.num_shifts, self.line_type)
+			statslist = "{0:4d} {1:4d} {2:4d} {3:4d} {4:6d} {5:6d} {6:3s}".format(self.goals, self.shots, self.hits, self.blocks, self.ice_time, self.num_shifts, self.line.line_type)
 			return "{0:50s} {1}".format(playerlist, statslist)
 		else:
 			return unicode("Empty (%d)" % self.pk)
@@ -276,7 +284,7 @@ class LineGame(models.Model):
 class LineGameTime(models.Model):
 #Shift instances for LineGame objects
 
-	linegame = models.ForeignKey(LineGame)
+	linegame = models.ForeignKey(LineGame, blank=True)
 	start_time = models.IntegerField()
 	end_time = models.IntegerField()
 	ice_time = models.IntegerField()
@@ -290,7 +298,7 @@ class LineGameTime(models.Model):
 			Can override the line type with ::type_override:: argument'''
 
 		if type_override=="N":
-			line_type = self.linegame.line_type
+			line_type = self.linegame.line.line_type
 		else:
 			line_type = type_override
 

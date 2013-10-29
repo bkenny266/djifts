@@ -30,6 +30,10 @@ class Team(models.Model):
 		return game_set
 
 
+	def get_lines_last_games(self, num_games):
+		return games.models.Line.objects.filter(linegame__teamgame__in=self.get_last_games(num_games))
+
+
 	def combine_game_lines(self, num_games):
 	#combines the line data from the last ::num_games:: into a single queryset
 
