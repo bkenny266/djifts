@@ -7,6 +7,7 @@ import games
 class Team(models.Model):
 	name = models.CharField(max_length = 100)
 	initials = models.CharField(max_length = 3)
+	city_name = models.CharField(max_length = 25)
 
 	def __unicode__(self):
 		return self.name

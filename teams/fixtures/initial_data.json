@@ -4,7 +4,8 @@
 		"pk":"1",
 		"fields": {
 			"name": "PHILADELPHIA FLYERS",
-			"initials": "PHI"
+			"initials": "PHI",
+			"city_name": "PHILADELPHIA"
 		}
 	},
 	{
@@ -12,7 +13,8 @@
 		"pk":"2",
 		"fields": {
 			"name": "NEW YORK RANGERS",
-			"initials": "NYR"
+			"initials": "NYR",
+			"city_name": "NY RANGERS"
 		}
 	},
 	{
@@ -20,7 +22,8 @@
 		"pk":"3",
 		"fields": {
 			"name": "NEW YORK ISLANDERS",
-			"initials": "NYI"
+			"initials": "NYI",
+			"city_name": "NY ISLANDERS"
 		}
 	},
 	{
@@ -28,7 +31,8 @@
 		"pk":"4",
 		"fields": {
 			"name": "PITTSBURGH PENGUINS",
-			"initials": "PIT"
+			"initials": "PIT",
+			"city_name": "PITTSBURGH"
 		}
 	},
 	{
@@ -36,7 +40,8 @@
 		"pk":"5",
 		"fields": {
 			"name": "NEW JERSEY DEVILS",
-			"initials": "NJD"
+			"initials": "NJD",
+			"city_name": "NEW JERSEY"
 		}
 	},
 	{
@@ -44,7 +49,8 @@
 		"pk":"6",
 		"fields": {
 			"name": "TAMPA BAY LIGHTNING",
-			"initials": "TBL"
+			"initials": "TBL",
+			"city_name": "TAMPA BAY"
 		}
 	},
 	{
@@ -52,7 +58,8 @@
 		"pk":"7",
 		"fields": {
 			"name": "WASHINGTON CAPITALS",
-			"initials": "WSH"
+			"initials": "WSH",
+			"city_name": "WASHINGTON"
 		}
 	},
 	{
@@ -60,7 +67,8 @@
 		"pk":"8",
 		"fields": {
 			"name": "FLORIDA PANTHERS",
-			"initials": "FLA"
+			"initials": "FLA",
+			"city_name": "FLORIDA"
 		}
 	},
 	{
@@ -68,7 +76,8 @@
 		"pk":"9",
 		"fields": {
 			"name": "WINNIPEG JETS",
-			"initials": "WPG"
+			"initials": "WPG",
+			"city_name": "WINNIPEG"
 		}
 	},
 	{
@@ -76,7 +85,8 @@
 		"pk":"10",
 		"fields": {
 			"name": "CAROLINA HURRICANES",
-			"initials": "CAR"
+			"initials": "CAR",
+			"city_name": "CAROLINA"
 		}
 	},
 	{
@@ -84,7 +94,8 @@
 		"pk":"11",
 		"fields": {
 			"name": "OTTAWA SENATORS",
-			"initials": "OTT"
+			"initials": "OTT",
+			"city_name": "OTTAWA"
 		}
 	},
 	{
@@ -92,7 +103,8 @@
 		"pk":"12",
 		"fields": {
 			"name": "TORONTO MAPLE LEAFS",
-			"initials": "TOR"
+			"initials": "TOR",
+			"city_name": "TORONTO"
 		}
 	},
 	{
@@ -100,7 +112,8 @@
 		"pk":"13",
 		"fields": {
 			"name": "MONTREAL CANADIENS",
-			"initials": "MTL"
+			"initials": "MTL",
+			"city_name": "MONTREAL"
 		}
 	},
 	{
@@ -108,7 +121,8 @@
 		"pk":"14",
 		"fields": {
 			"name": "BOSTON BRUINS",
-			"initials": "BOS"
+			"initials": "BOS",
+			"city_name": "BOSTON"
 		}
 	},	
 	{
@@ -116,7 +130,8 @@
 		"pk":"15",
 		"fields": {
 			"name": "BUFFALO SABRES",
-			"initials": "BUF"
+			"initials": "BUF",
+			"city_name": "BUFFALO"
 		}
 	},
 	{
@@ -124,7 +139,8 @@
 		"pk":"16",
 		"fields": {
 			"name": "DETROIT RED WINGS",
-			"initials": "DET"
+			"initials": "DET",
+			"city_name": "DETROIT"
 		}
 	},
 	{
@@ -132,7 +148,8 @@
 		"pk":"17",
 		"fields": {
 			"name": "CHICAGO BLACKHAWKS",
-			"initials": "CHI"
+			"initials": "CHI",
+			"city_name": "CHICAGO"
 		}
 	},
 	{
@@ -141,6 +158,8 @@
 		"fields": {
 			"name": "ST. LOUIS BLUES",
 			"initials": "STL"
+			,
+			"city_name": "ST LOUIS"
 		}
 	},
 	{
@@ -148,7 +167,8 @@
 		"pk":"19",
 		"fields": {
 			"name": "COLUMBUS BLUE JACKETS",
-			"initials": "CBJ"
+			"initials": "CBJ",
+			"city_name": "COLUMBUS"
 		}
 	},
 	{
@@ -156,7 +176,8 @@
 		"pk":"20",
 		"fields": {
 			"name": "NASHVILLE PREDATORS",
-			"initials": "NSH"
+			"initials": "NSH",
+			"city_name": "NASHVILLE"
 		}
 	},
 	{
@@ -164,7 +185,8 @@
 		"pk":"21",
 		"fields": {
 			"name": "DALLAS STARS",
-			"initials": "DAL"
+			"initials": "DAL",
+			"city_name": "DALLAS"
 		}
 	},
 	{
@@ -172,7 +194,8 @@
 		"pk":"22",
 		"fields": {
 			"name": "LOS ANGELES KINGS",
-			"initials": "LAK"
+			"initials": "LAK",
+			"city_name": "LOS ANGELES"
 		}
 	},
 	{
@@ -180,7 +203,8 @@
 		"pk":"23",
 		"fields": {
 			"name": "ANAHEIM DUCKS",
-			"initials": "ANA"
+			"initials": "ANA",
+			"city_name": "ANAHEIM"
 		}
 	},
 	{
@@ -188,7 +212,8 @@
 		"pk":"24",
 		"fields": {
 			"name": "SAN JOSE SHARKS",
-			"initials": "SJS"
+			"initials": "SJS",
+			"city_name": "SAN JOSE"
 		}
 	},
 	{
@@ -196,7 +221,8 @@
 		"pk":"25",
 		"fields": {
 			"name": "PHOENIX COYOTES",
-			"initials": "PHX"
+			"initials": "PHX",
+			"city_name": "PHOENIX"
 		}
 	},
 	{
@@ -204,7 +230,8 @@
 		"pk":"26",
 		"fields": {
 			"name": "VANCOUVER CANUCKS",
-			"initials": "VAN"
+			"initials": "VAN",
+			"city_name": "VANCOUVER"
 		}
 	},
 	{
@@ -212,7 +239,8 @@
 		"pk":"27",
 		"fields": {
 			"name": "EDMONTON OILERS",
-			"initials": "EDM"
+			"initials": "EDM",
+			"city_name": "EDMONTON"
 		}
 	},
 	{
@@ -220,7 +248,8 @@
 		"pk":"28",
 		"fields": {
 			"name": "CALGARY FLAMES",
-			"initials": "CGY"
+			"initials": "CGY",
+			"city_name": "CALGARY"
 		}
 	},
 	{
@@ -228,7 +257,8 @@
 		"pk":"29",
 		"fields": {
 			"name": "COLORADO AVALANCHE",
-			"initials": "COL"
+			"initials": "COL",
+			"city_name": "COLORADO"
 		}
 	},
 	{
@@ -236,7 +266,8 @@
 		"pk":"30",
 		"fields": {
 			"name": "MINNESOTA WILD",
-			"initials": "MIN"
+			"initials": "MIN",
+			"city_name": "MINNESOTA"
 		}
 	}
 ]
