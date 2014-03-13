@@ -46,6 +46,7 @@ Players:  Includes models and views for interacting with data on a "player" leve
 
 Next Steps
 ----------
+-Refactor the datamanager app for tighter encapsulation; should make things easier to test
 -Implement rigorous testing on line matching logic.  
 -Need to be particularly vigilent about confirming data being downloaded
 to the database is correct and implement a rollback system in the event of failure.  
