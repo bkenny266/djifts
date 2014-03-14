@@ -260,6 +260,7 @@ class LineGame(models.Model):
 
 	num_shifts = models.IntegerField()
 	ice_time = models.IntegerField()
+	ice_time_str = models.CharField(max_length=6, blank=True)
 	goals = models.IntegerField()
 	shots = models.IntegerField()
 	blocks = models.IntegerField()
@@ -280,6 +281,20 @@ class LineGame(models.Model):
 			return "{0:50s} {1}".format(playerlist, statslist)
 		else:
 			return unicode("Empty (%d)" % self.pk)
+	
+	def set_ice_time_str(self):
+		'''
+		Converts object's integer of seconds into a 
+		MM:SS string and saves it in data'''
+		sec_in = self.ice_time
+		mins = sec_in / 60
+		secs = sec_in % 60
+		if mins < 10:
+			mins = "0" + str(mins)
+		if secs < 10:
+			secs = "0" + str(secs)
+		self.ice_time_str = str(mins) + ":" + str(secs)
+		self.save()
 
 class LineGameTime(models.Model):
 #Shift instances for LineGame objects
@@ -308,6 +323,7 @@ class LineGameTime(models.Model):
 								   models.Q(playergame__player__position='L')),
 			'D' : ShiftGame.objects.filter(playergame__team=self.linegame.teamgame, start_time__lte=self.start_time, end_time__gt=self.start_time, playergame__player__position='D')
 			}[line_type]
+
 
 class TeamGameEvent(models.Model):
 #Statistical events from a TeamGame that are pulled from the game's Play-by-Play data

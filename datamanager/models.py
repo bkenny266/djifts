@@ -1,7 +1,7 @@
 import datetime
-import requests
-
 import re
+
+import requests
 from bs4 import BeautifulSoup
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist

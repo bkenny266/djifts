@@ -8,7 +8,7 @@ from datetime import date
 import ipdb
 
 from bs4 import BeautifulSoup
-from games.models import Game
+from games.models import Game, LineGame
 from .utility import create_game, import_player_data, get_soup, make_lines, import_events, process_penalties, check_penalty_lines
 from .date_util import process_date
 from .eventprocessor import EventProcessor
@@ -46,6 +46,12 @@ def add_game(game_num):
 
 		make_lines(g.team_home)
 		make_lines(g.team_away)
+
+		#now that lines are processed, calculate ice_time_str for all LineGames
+		teams = [g.team_home, g.team_away]
+		for team in teams:
+			for lg in LineGame.objects.filter(teamgame=team):
+				lg.set_ice_time_str()
 
 		check_penalty_lines(g)
 

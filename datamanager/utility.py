@@ -186,6 +186,7 @@ def import_player_data(team, roster_soup):
 			shift = shift.next_sibling.next_sibling
 			shift_list = shift.find_all("td")
 
+	#don't need to include goalies in line combinations
 	ShiftGame.objects.filter(playergame__player__position='G').delete()
 
 
