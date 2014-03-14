@@ -106,10 +106,11 @@ class GameList(models.Model):
 
 	@classmethod
 	def convert_game_id(cls, season, game_id):
-		'''Receives a scraped game_id, returns an id value reformatted as such:
+		'''Receives scraped season and game_id strings, 
+			returns an id value reformatted as such:
 		 		[season][season_subcategory][game_number] 
 				where season_subcategory is 02 = regular season, 03 = playoffs
-				ex: 12020420
+				ex in: ("2012", "020420")	ex: out: 12020420
 					season = 12 (season starting in 2012)
 					season_subcategory = 02 (regular season)
 					game_number = 0420  (game is always four digits)		
