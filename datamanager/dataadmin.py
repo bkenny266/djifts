@@ -47,13 +47,14 @@ def add_game(game_num):
 		make_lines(g.team_home)
 		make_lines(g.team_away)
 
+		check_penalty_lines(g)
+
 		#now that lines are processed, calculate ice_time_str for all LineGames
 		teams = [g.team_home, g.team_away]
 		for team in teams:
 			for lg in LineGame.objects.filter(teamgame=team):
 				lg.set_ice_time_str()
 
-		check_penalty_lines(g)
 
 		import_events(g, events)
 
