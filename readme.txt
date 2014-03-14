@@ -24,19 +24,19 @@ The Applications
 Datamanager: 
 	Includes methods used for downloading, processing, and storing data.
 
-	-admin.py - currently acts as the "front end" for downloading game data. 
-	The user can run the add_game() method to download data for a particular 
-	game.  
+	-models.py - stores game headers and methods to load game data.
+
+	-admin.py - former "front end" for downloading game data. currently used
+	as a middle-man to interact with the deeper stages of game processing, 
+	but this file will need to be phased out and merged with utility.py.
 	
-	-utility.py - contains methods used by admin.py to retrieve game roster, 
-	player shift times, generate the line combinations from each NHL game, 
-	and store all of this in the database.
+	-utility.py - primary methods for loading game data includes importing  
+	shift times, calculating line combinations, and writing to database.
 	
 	-eventprocessor.py - special utility module that implements a class for 
-	downloading	and storing data for the different 'event types' that occur 
-	during a game (shots, hits,	blocks, goals)
+	importing data regarding the different 'event types' occurring 
+	during the game (shots, hits, blocks, goals)
 	
-
 Games:  Includes models and views for interacting with data on a "game" level.
 
 Teams:  Includes models and views for interacting with data on a "team" level.
