@@ -53,7 +53,7 @@ class GameList(models.Model):
 
 
 	@classmethod
-	def parse_headers(cls, page):
+	def get_headers(cls, page):
 		r = requests.get(games_url, data = {'pg' : page})
 		soup = BeautifulSoup(r.text)
 		items = soup.find_all("td", class_="active")		
@@ -100,8 +100,8 @@ class GameList(models.Model):
 
 		#SETTINGS FOR SCRAPING
 		URL_INDEX = 0
-		HOME_TEAM_INDEX = 1
-		AWAY_TEAM_INDEX = 3
+		AWAY_TEAM_INDEX = 1
+		HOME_TEAM_INDEX = 3
 		url = gamedata[URL_INDEX].a['href']
 		date = gamedata[URL_INDEX].text
 		#grabs last part of URL, strips out "GS" and extension
