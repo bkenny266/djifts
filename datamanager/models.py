@@ -32,8 +32,9 @@ class GameList(models.Model):
 			self.home_team, self.date.__str__())
 
 	def load_game_data(self):
-		self.processed = datamanager.dataadmin.add_game(self.game_id)
-		self.save()
+		if datamanager.dataadmin.add_game(self.game_id):
+			self.processed = True
+			self.save()
 
 	def revert_game_id(self):
 		'''Reverts a game_id back to original form to download data from web'''

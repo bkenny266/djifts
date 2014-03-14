@@ -20,7 +20,6 @@ class GameListAdmin(admin.ModelAdmin):
 
 	test_actions.short_description = "Load game to database"
 
-
 	actions = [test_actions,]
 
 
