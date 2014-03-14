@@ -11,8 +11,10 @@ import datamanager.admin
 games_url =u"http://www.nhl.com/ice/gamestats.htm?pg=2"
 
 class GameList(models.Model):
-	'''Holds games ids from a season with information showing if it's been 
-	processed.  Includes load and reload methods to process game line data'''
+	'''
+	Holds game header info from a season with indicator of 
+	if it's been processed.  Includes load and reload methods for  
+	processing game line data'''
 
 	game_id = models.IntegerField(primary_key = True)
 	date = models.DateField()

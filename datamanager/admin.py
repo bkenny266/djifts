@@ -13,23 +13,17 @@ from .utility import create_game, import_player_data, get_soup, make_lines, impo
 from .date_util import process_date
 from .eventprocessor import EventProcessor
 
-
-#extends Game model and gives it functionality to create data
-
-def add_game(game_num):
-#INPUT: game_num is the unique id for the game, which is determined as follows
-#		 		[season][season_subcategory][game_number] 
-#				where season_subcategory is 02 = regular season, 03 = playoffs
-#				ex: 12020420
-#					season = 12 (season starting in 2012)
-#					season_subcategory = 02 (regular season)
-#					game_number = 0420  (game is always four digits)
-#THROWS EXCEPTION if there were any issues retrieving data from the game
-#RETURNS Boolean indicating success/failure
+def add_game(season, game_num):
+'''
+Master function for loading game data
+in: season (str nhl format), game_num (str nhl formt)
+out: bool indicating success
+'''
 
 #!!!STILL NEED TO IMPLEMENT DATABASE ROLLBACK IF UNSUCCESSFUL!!!
 
 	try: 
+		#if already exists, nothing to do here
 		Game.objects.get(game_id=game_num)
 		print "Game %s already exists in database." % game_num
 		return False
