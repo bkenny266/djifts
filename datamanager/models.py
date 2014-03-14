@@ -6,9 +6,10 @@ import re
 from bs4 import BeautifulSoup
 from teams.models import Team
 import datamanager.admin
+import ipdb
 
 
-games_url =u"http://www.nhl.com/ice/gamestats.htm?pg=2"
+games_url =u"http://www.nhl.com/ice/gamestats.htm"
 
 class GameList(models.Model):
 	'''
@@ -22,10 +23,12 @@ class GameList(models.Model):
 	home_team = models.ForeignKey(Team, related_name = "home")
 	away_team = models.ForeignKey(Team, related_name = "away")
 
-
 	orig_season_id = models.CharField(max_length = 8)
 	orig_game_key = models.CharField(max_length = 6)
 
+	def __unicode__(self):
+		return u"%d - %s @ %s (%s)" % (self.game_id, self.away_team, 
+			self.home_team, self.date.__str__())
 
 	def revert_game_id(self):
 		'''Reverts a game_id back to original form to download data from web'''
@@ -46,12 +49,32 @@ class GameList(models.Model):
 
 
 	def load_game_data(self):
-		self.processed = datamanger.admin.add_game(self.get_orig_game_id())
+		self.processed = datamanager.admin.add_game(self.game_id)
 
 
 	@classmethod
-	def load_headers_from_page(cls, page):
-		pass
+	def parse_headers(cls, page):
+		r = requests.get(games_url, data = {'pg' : page})
+		soup = BeautifulSoup(r.text)
+		items = soup.find_all("td", class_="active")		
+		games = []
+		for item in items:
+			games.append(item.parent)
+		return games
+
+	@classmethod
+	def load_headers(cls, *games):
+		'''
+		Pass in game header data, or unpack a list of game header data
+		to load to database'''
+		for game in games:
+			game_info = cls.parse_game_info(list(game.children))
+			if cls.load_game_info(game_info):
+				print "%s loaded to database" % game_info[0]
+			else:
+				print "%s already exists" % game_info[0]
+
+
 
 	@classmethod
 	def load_game_info(cls, game_tuple):
