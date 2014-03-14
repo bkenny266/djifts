@@ -1,5 +1,4 @@
 #djifts
-#------
 
 Overview: This is a Django/Python web application currently in development. 
 The goal of this project is to collect data from NHL games related to
