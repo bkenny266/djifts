@@ -14,7 +14,7 @@ scopes: league-wide, team-wide, and game-wide.
 
 To install
 ----------
-‘pip install -r requirements.txt’
+<code>pip install -r requirements.txt</code>
 
 
 Requires Python 2.7, Django 1.5.1, and the following python modules: 
