@@ -47,7 +47,7 @@ class GameList(models.Model):
 
 
 	@classmethod
-	def get_headers(cls, page):
+	def load_headers(cls, page):
 		'''
 		Receives page offset from the stats page and returns list
 		containing data required for loading each to the database'''
@@ -57,10 +57,10 @@ class GameList(models.Model):
 		games = []
 		for item in items:
 			games.append(item.parent)
-		return games
+		cls.process_headers(*games)
 
 	@classmethod
-	def load_headers(cls, *games):
+	def process_headers(cls, *games):
 		'''
 		Pass in game header data, or unpack a list of game header data
 		to load to database'''
