@@ -1,12 +1,13 @@
-from django.db import models
-from django.core.exceptions import ObjectDoesNotExist
 import datetime
 import requests
+
 import re
 from bs4 import BeautifulSoup
-from teams.models import Team
+from django.db import models
+from django.core.exceptions import ObjectDoesNotExist
+
 import datamanager.admin
-import ipdb
+from teams.models import Team
 
 
 games_url =u"http://www.nhl.com/ice/gamestats.htm"
@@ -30,6 +31,9 @@ class GameList(models.Model):
 		return u"%d - %s @ %s (%s)" % (self.game_id, self.away_team, 
 			self.home_team, self.date.__str__())
 
+	def load_game_data(self):
+		self.processed = datamanager.admin.add_game(self.game_id)
+
 	def revert_game_id(self):
 		'''Reverts a game_id back to original form to download data from web'''
 
@@ -40,21 +44,13 @@ class GameList(models.Model):
 
 		return (season, game)
 
-	def get_orig_game_id(self):
-		'''
-		returns a tuple of orig_season_id and orig_game_key to be used
-		in data downloads
-		'''
-		return (self.orig_season_id, self.orig_game_key)
-
-
-	def load_game_data(self):
-		self.processed = datamanager.admin.add_game(self.game_id)
-
 
 	@classmethod
 	def get_headers(cls, page):
-		r = requests.get(games_url, data = {'pg' : page})
+		'''
+		Receives page offset from the stats page and returns list
+		containing data required for loading each to the database'''
+		r = requests.get(games_url, params = {'pg' : page})
 		soup = BeautifulSoup(r.text)
 		items = soup.find_all("td", class_="active")		
 		games = []
@@ -73,7 +69,6 @@ class GameList(models.Model):
 				print "%s loaded to database" % game_info[0]
 			else:
 				print "%s already exists" % game_info[0]
-
 
 
 	@classmethod
@@ -131,7 +126,8 @@ class GameList(models.Model):
 		try:
 			dt = datetime.datetime.strptime(date_in, FORMAT)
 		except:
-			raise(ValueError("%s not in expected format - %s" % (date_in, FORMAT)))
+			raise(ValueError("%s not in expected format - %s" % 
+				(date_in, FORMAT)))
 		
 		return dt.date()
 
@@ -163,28 +159,9 @@ class GameList(models.Model):
 		#check that first two digits are valid
 		check_value = formatted_id / 1000000
 		if check_value < 12 or check_value > 19:
-			raise(Exception("season value is %d - should be between 12 and 19" %
-				check_value))
+			raise(Exception("season value is %d - should be between 12 and 19"
+				% check_value))
 
 		return formatted_id
 
-
-
-def get_game_list():
-	r = requests.get("http://www.nhl.com/ice/gamestats.htm?pg=2")	
-	soup = BeautifulSoup(r.text.encode("utf-8"))
-	items = soup.find_all("td", class_="active")
-
-	return items
-
-def get_game_item(item):
-	return list(item.parent.children)	
-
-
-def get_test_data():
-	r = requests.get("http://www.nhl.com/ice/gamestats.htm?pg=2")
-	soup = BeautifulSoup(r.text.encode("utf-8"))
-	items = soup.find_all("td", class_="active")
-
-	return list(items[0].parent.children)
 
