@@ -27,20 +27,20 @@ The Applications
 ----------------
 
 Datamanager: 
-	Includes methods used for downloading, processing, and storing data.
+Includes methods used for downloading, processing, and storing data.
 
-	-models.py - stores game headers and methods to load game data.
+-models.py - stores game headers and methods to load game data.
 
-	-admin.py - former "front end" for downloading game data. currently used
-	as a middle-man to interact with the deeper stages of game processing, 
-	but this file will need to be phased out and merged with utility.py.
-	
-	-utility.py - primary methods for loading game data includes importing  
-	shift times, calculating line combinations, and writing to database.
-	
-	-eventprocessor.py - special utility module that implements a class for 
-	importing data regarding the different 'event types' occurring 
-	during the game (shots, hits, blocks, goals)
+-admin.py - former "front end" for downloading game data. currently used
+as a middle-man to interact with the deeper stages of game processing, 
+but this file will need to be phased out and merged with utility.py.
+
+-utility.py - primary methods for loading game data includes importing  
+shift times, calculating line combinations, and writing to database.
+
+-eventprocessor.py - special utility module that implements a class for 
+importing data regarding the different 'event types' occurring 
+during the game (shots, hits, blocks, goals)
 	
 Games:  Includes models and views for interacting with data on a "game" level.
 
