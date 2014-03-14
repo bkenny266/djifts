@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 
-import datamanager.admin
+import datamanager.dataadmin
 from teams.models import Team
 
 
@@ -32,7 +32,8 @@ class GameList(models.Model):
 			self.home_team, self.date.__str__())
 
 	def load_game_data(self):
-		self.processed = datamanager.admin.add_game(self.game_id)
+		self.processed = datamanager.dataadmin.add_game(self.game_id)
+		self.save()
 
 	def revert_game_id(self):
 		'''Reverts a game_id back to original form to download data from web'''
