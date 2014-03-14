@@ -51,16 +51,16 @@ Players:  Includes models and views for interacting with data on a "player" leve
 
 Next Steps
 ----------
--Refactor the datamanager app for tighter encapsulation; should make things easier to test
--Implement rigorous testing on line matching logic.  
--Need to be particularly vigilent about confirming data being downloaded
-to the database is correct and implement a rollback system in the event of failure.  
--Improve templates and site usability.  Need to learn more about Bootstrap and figure out
-how to design an appealing front-end for the website.
--Try to improve PEP8 compliance
--Need to implement testing structure across the board.  Unit tests, integration tests, etc.
--Implement a system to continuously scan the NHL games page and  download data
-for new games as they occur.
+	-Refactor the datamanager app for tighter encapsulation; should make things easier to test
+	-Implement rigorous testing on line matching logic.  
+	-Need to be particularly vigilent about confirming data being downloaded
+	to the database is correct and implement a rollback system in the event of failure.  
+	-Improve templates and site usability.  Need to learn more about Bootstrap and figure out
+	how to design an appealing front-end for the website.
+	-Try to improve PEP8 compliance
+	-Need to implement testing structure across the board.  Unit tests, integration tests, etc.
+	-Implement a system to continuously scan the NHL games page and  download data
+	for new games as they occur.
 
 
 
