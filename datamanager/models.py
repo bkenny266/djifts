@@ -5,20 +5,50 @@ import requests
 import re
 from bs4 import BeautifulSoup
 from teams.models import Team
+import datamanager.admin
 
+
+games_url =u"http://www.nhl.com/ice/gamestats.htm?pg=2"
 
 class GameList(models.Model):
-	'''Holds games ids from a season with information showing if it's been processed
-	Includes load and reload methods to process game line data'''
+	'''Holds games ids from a season with information showing if it's been 
+	processed.  Includes load and reload methods to process game line data'''
 
-	game_key = models.IntegerField(primary_key = True)
+	game_id = models.IntegerField(primary_key = True)
 	date = models.DateField()
 	processed = models.BooleanField(default = False)
 	home_team = models.ForeignKey(Team, related_name = "home")
 	away_team = models.ForeignKey(Team, related_name = "away")
 
+
+	orig_season_id = models.CharField(max_length = 8)
+	orig_game_key = models.CharField(max_length = 6)
+
+
+	def revert_game_id(self):
+		'''Reverts a game_id back to original form to download data from web'''
+
+		season = self.game_id / 1000000
+		season = "20" + str(season) + "20" + str(season+1)
+
+		game = "0" + str(self.game_id % 1000000)
+
+		return (season, game)
+
+	def get_orig_game_id(self):
+		'''
+		returns a tuple of orig_season_id and orig_game_key to be used
+		in data downloads
+		'''
+		return (self.orig_season_id, self.orig_game_key)
+
+
+	def load_game_data(self):
+		self.processed = datamanger.admin.add_game(self.get_orig_game_id())
+
+
 	@classmethod
-	def load_game_info(game_tuple):
+	def load_game_info(cls, game_tuple):
 		'''Receives a tuple of (game_id, date, home_team, away_team) and 
 		uses it to load data to the GameList model'''
 		game_id, date, home_team, away_team = game_tuple
@@ -26,7 +56,10 @@ class GameList(models.Model):
 			GameList.objects.get(pk=game_id)
 			return False
 		except ObjectDoesNotExist:
-			GameList.objects.create(pk=game_id, date=date, home_team=home_team, away_team=away_team)
+			g = GameList(pk=game_id, date=date, home_team=home_team,
+				away_team=away_team)
+			g.orig_season_id, g.orig_game_key = g.revert_game_id()
+			g.save()
 			return True
 
 	@classmethod
@@ -103,8 +136,9 @@ class GameList(models.Model):
 
 		return formatted_id
 
+
 def get_test_data():
-	r = requests.get("http://www.nhl.com/ice/gamestats.htm")
+	r = requests.get("http://www.nhl.com/ice/gamestats.htm?pg=2")
 	soup = BeautifulSoup(r.text.encode("utf-8"))
 	items = soup.find_all("td", class_="active")
 
