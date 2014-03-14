@@ -13,28 +13,25 @@ from .utility import create_game, import_player_data, get_soup, make_lines, impo
 from .date_util import process_date
 from .eventprocessor import EventProcessor
 
-def add_game(season, game_num):
-'''
-Master function for loading game data
-in: season (str nhl format), game_num (str nhl formt)
-out: bool indicating success
-'''
+def add_game(game_num):
+	'''
+	Master function for loading game data
+	in: game_id key
+	out: data loaded to model, returns a bool indicating success
+	'''
 
-#!!!STILL NEED TO IMPLEMENT DATABASE ROLLBACK IF UNSUCCESSFUL!!!
+	#!!!STILL NEED TO IMPLEMENT DATABASE ROLLBACK IF UNSUCCESSFUL!!!
 
 	try: 
 		#if already exists, nothing to do here
 		Game.objects.get(game_id=game_num)
 		print "Game %s already exists in database." % game_num
 		return False
-	
 	except Game.DoesNotExist:
 		#if game doesn't exist in database, add it
-
 		roster_soup = get_soup(game_num, 'roster')
 
 		g = create_game(game_num, roster_soup)
-
 
 		#import data separately for home and away team
 
