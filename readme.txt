@@ -14,6 +14,10 @@ scopes: league-wide, team-wide, and game-wide.
 
 To install
 ----------
+‘’’
+    pip install -r requirements.txt
+‘’’
+
 Requires Python 2.7, Django 1.5.1, and the following python modules: 
 BeautifulSoup, requests, nameparser
 
