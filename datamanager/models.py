@@ -50,9 +50,15 @@ class GameList(models.Model):
 
 
 	@classmethod
+	def load_headers_from_page(cls, page):
+		pass
+
+	@classmethod
 	def load_game_info(cls, game_tuple):
-		'''Receives a tuple of (game_id, date, home_team, away_team) and 
-		uses it to load data to the GameList model'''
+		'''
+		Receives a tuple of (game_id, date, home_team, away_team) and 
+		uses it to load data to the GameList model.
+		Returns game header object'''
 		game_id, date, home_team, away_team = game_tuple
 		try:
 			GameList.objects.get(pk=game_id)
@@ -62,7 +68,7 @@ class GameList(models.Model):
 				away_team=away_team)
 			g.orig_season_id, g.orig_game_key = g.revert_game_id()
 			g.save()
-			return True
+			return g
 
 	@classmethod
 	def parse_game_info(cls, gamedata):
@@ -138,6 +144,18 @@ class GameList(models.Model):
 				check_value))
 
 		return formatted_id
+
+
+
+def get_game_list():
+	r = requests.get("http://www.nhl.com/ice/gamestats.htm?pg=2")	
+	soup = BeautifulSoup(r.text.encode("utf-8"))
+	items = soup.find_all("td", class_="active")
+
+	return items
+
+def get_game_item(item):
+	return list(item.parent.children)	
 
 
 def get_test_data():
