@@ -19,6 +19,54 @@ from teams.models import Team
 
 from .myfunks import convertToSecs, deleteAfter
 from .eventprocessor import EventProcessor
+from .date_util import process_date
+
+def add_game(game_num):
+	'''
+	Master function for loading game data
+	in: game_id key
+	out: data loaded to model, returns a bool indicating success
+	'''
+
+	#!!!STILL NEED TO IMPLEMENT DATABASE ROLLBACK IF UNSUCCESSFUL!!!
+
+	try: 
+		#if already exists, nothing to do here
+		Game.objects.get(game_id=game_num)
+		print "Game %s already exists in database." % game_num
+		return False
+	except Game.DoesNotExist:
+		#if game doesn't exist in database, add it
+		roster_soup = get_soup(game_num, 'roster')
+
+		g = create_game(game_num, roster_soup)
+
+		#import data separately for home and away team
+
+		event_soup = get_soup(game_num, 'play_by_play')
+		events = EventProcessor(event_soup)
+		
+		import_player_data(g.team_home, roster_soup)
+		import_player_data(g.team_away, roster_soup)
+
+		process_penalties(g, events.penalties)
+		#ipdb.set_trace()
+
+		make_lines(g.team_home)
+		make_lines(g.team_away)
+
+		check_penalty_lines(g)
+
+		#now that lines are processed, calculate ice_time_str for all LineGames
+		teams = [g.team_home, g.team_away]
+		for team in teams:
+			for lg in LineGame.objects.filter(teamgame=team):
+				lg.set_ice_time_str()
+
+
+		import_events(g, events)
+
+		return True
 
 
 def get_soup(game_num, link_type):
