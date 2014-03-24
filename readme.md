@@ -1,6 +1,7 @@
 #djifts
 
-Overview: This is a Django/Python web application currently in development. 
+##Overview 
+This is a Django/Python web application currently in development. 
 The goal of this project is to collect data from NHL games related to
 player line combinations and aggregate statistics to measure the performance
 of these line combinations.  The stats that we will measure are goals, shots,
