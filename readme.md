@@ -35,10 +35,10 @@ following url pattern:
 ###Datamanager: 
 Includes methods used for downloading, processing, and storing data.
 
-*models.py - stores game headers and methods to load game data.
-*utility.py - primary methods for loading game data includes importing  
+* models.py - stores game headers and methods to load game data.
+* utility.py - primary methods for loading game data includes importing  
 shift times, calculating line combinations, and writing to database.
-*eventprocessor.py - special utility module that implements a class for 
+* eventprocessor.py - special utility module that implements a class for 
 importing data regarding the different 'event types' occurring 
 during the game (shots, hits, blocks, goals)
 	
@@ -53,19 +53,19 @@ Includes models and views for interacting with data on a "player" level.
 	
 
 #Next Steps
-*API for json data service 
-*Refactor the datamanager app for tighter encapsulation; should make things easier to test
-*Implement rigorous testing on line matching logic.  
-*Need to be particularly vigilent about confirming data being downloaded
+* Look into improving GameProcessor queries with a Manager
+* Refactor the datamanager app for tighter encapsulation; should make things easier to test
+* Implement rigorous testing on line matching logic.  
+* Need to be particularly vigilent about confirming data being downloaded
 to the database is correct and implement a rollback system in the event of failure.  
-*Improve templates and site usability.  Need to learn more about Bootstrap and figure out
+* Improve templates and site usability.  Need to learn more about Bootstrap and figure out
 how to design an appealing front-end for the website.
-*Try to improve PEP8 compliance
-*Need to implement testing structure across the board.  Unit tests, integration tests, etc.
-*Implement a system to continuously scan the NHL games page and  download data
+* Try to improve PEP8 compliance
+* Need to implement testing structure across the board.  Unit tests, integration tests, etc.
+* Implement a system to continuously scan the NHL games page and  download data
 for new games as they occur.
 
 
 #Other things to do
-*New GameManager type with a "create" function that inializes a 
+* New GameManager type with a "create" function that inializes a 
 list containing both home team and away team

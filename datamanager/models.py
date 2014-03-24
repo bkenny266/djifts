@@ -1,10 +1,12 @@
 import datetime
 import re
 
+import json
 import requests
 from bs4 import BeautifulSoup
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 
 from datamanager.utility import add_game
 from teams.models import Team
@@ -12,7 +14,7 @@ from teams.models import Team
 
 games_url =u"http://www.nhl.com/ice/gamestats.htm"
 
-class GameList(models.Model):
+class GameHeader(models.Model):
 	'''
 	Holds game header info from a season with indicator of 
 	if it's been processed.  Includes load and reload methods for  
@@ -46,6 +48,44 @@ class GameList(models.Model):
 
 		return (season, game)
 
+	def get_json(self):
+		header_dict = {'id' : self.game_id, 'date' : self.get_date_str(), 
+		'home_team' : self.home_team.name, 'away_team' : self.away_team.name}
+		return json.dumps(header_dict)
+
+	def get_date_str(self):
+		return self.date.strftime('%m/%d/%Y')
+
+
+
+
+class GameProcessor(object):
+
+	@classmethod
+	def get_json(cls, date=None, team_initials=None):
+		'''
+		Returns json representation of a list of game headers.
+		Can request results filtered by team and date '''
+		
+		game_list = []
+
+		if date:
+			filters = (Q(date = date),)
+		elif team_initials:
+			filters = (Q(home_team__initials = team_initials) | 
+					Q(away_team__initials = team_initials),)
+		else:
+			filters = None
+
+		if filters:
+			query = GameHeader.objects.filter(*filters, processed=True)
+		else:
+			query = GameHeader.objects.filter(processed=True)
+
+		for game in query:
+			game_list.append(game.get_json())
+
+		return json.dumps(game_list)
 
 	@classmethod
 	def load_headers(cls, page):
@@ -77,14 +117,14 @@ class GameList(models.Model):
 	def load_game_info(cls, game_tuple):
 		'''
 		Receives a tuple of (game_id, date, home_team, away_team) and 
-		uses it to load data to the GameList model.
+		uses it to load data to the GameHeader model.
 		Returns game header object'''
 		game_id, date, home_team, away_team = game_tuple
 		try:
-			GameList.objects.get(pk=game_id)
+			GameHeader.objects.get(pk=game_id)
 			return False
 		except ObjectDoesNotExist:
-			g = GameList(pk=game_id, date=date, home_team=home_team,
+			g = GameHeader(pk=game_id, date=date, home_team=home_team,
 				away_team=away_team)
 			g.orig_season_id, g.orig_game_key = g.revert_game_id()
 			g.save()
@@ -165,5 +205,6 @@ class GameList(models.Model):
 				% check_value))
 
 		return formatted_id
+
 
 

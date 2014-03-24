@@ -1,7 +1,7 @@
 from django.contrib import admin, messages
-from datamanager.models import GameList
+from datamanager.models import GameHeader
 
-class GameListAdmin(admin.ModelAdmin):
+class GameHeaderAdmin(admin.ModelAdmin):
 
 	def load_game(GameListAdmin, request, queryset):
 		'''
@@ -27,4 +27,4 @@ class GameListAdmin(admin.ModelAdmin):
 
 	actions = [load_game,]
 
-admin.site.register(GameList, GameListAdmin)
+admin.site.register(GameHeader, GameHeaderAdmin)

@@ -224,10 +224,13 @@ class Game(models.Model):
 				status = "away_team"
 			game_dict[status] = team_line_data
 		
-		game_dict['date'] = self.date.strftime('%m/%d/%Y')
+		game_dict['date'] = self.get_date_str()
 		game_dict['id'] = self.game_id
 
 		return json.dumps(game_dict)
+
+	def get_date_str(self):
+		return self.date.strftime('%m/%d/%Y')
 
 	def roster_home(self, pos = 'a'):
 		return self.team_home.get_roster(pos)
