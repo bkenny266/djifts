@@ -29,9 +29,9 @@ BeautifulSoup, requests, nameparser
 Delivers json data upon request
 
 	```
-	/api/game_id - request headers for all loaded game data
-	/api/game_id/[team_initials] - request headers for a specific team's loaded data
-	/api/game/[game_id] - request game-level data 
+	/api/get_game_list/ - request headers for all loaded game data
+	/api/get_game_list/[team_initials] - request headers for a specific team's loaded data
+	/api/get_game/[game_id] - request game-level data 
 	```
 
 ###Datamanager: 
