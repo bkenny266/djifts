@@ -25,11 +25,12 @@ BeautifulSoup, requests, nameparser
 #The Applications
 
 ###API: 
-Export json game data - currently linked to data at the Game level via the
-following url pattern:
+Delivers json data upon request
 
 	```
-	/api/game/[game_id]
+	/api/game_id - request headers for all loaded game data
+	/api/game_id/[team_initials] - request headers for a specific team's loaded data
+	/api/game/[game_id] - request game-level data 
 	```
 
 ###Datamanager: 
