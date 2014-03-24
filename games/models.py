@@ -3,6 +3,7 @@
 GAMES - models.py
 '''
 
+import json
 from django.db import models
 
 from players.models import Player
@@ -18,6 +19,7 @@ class TeamGame(models.Model):
 #games such as roster, shifts, and lines.
 
 	team = models.ForeignKey(Team)
+	#homeaway = lambda x: return u"home" if t.is_home() else return u"away"
 
 
 	def __unicode__(self):
@@ -37,6 +39,16 @@ class TeamGame(models.Model):
 		else:
 			return False
 
+	def get_json(self):
+		'''
+		returns json representation of TeamGame object'''
+		data = []
+		for lg in self.linegame_set.all():
+			data.append(lg.get_json())
+
+		return data
+
+
 	def get_game_object(self):
 	#returns the Game object that this TeamGame is related to
 		if self.is_home():
@@ -52,6 +64,13 @@ class TeamGame(models.Model):
 			return self.home.get().team_away
 		if self.is_away():
 			return self.away.get().team_home
+
+
+	def get_lines_json(self, event, position):
+		'''
+		returns a json object of this TeamGame's line data'''
+
+		lgset = self.get_lines()
 
 
 	def get_roster(self, pos='A'):
@@ -174,6 +193,7 @@ class TeamGame(models.Model):
 
 		return q
 
+
 class Game(models.Model):
 #Game model represents each game played.
 #team_home and team_away are used to access
@@ -190,9 +210,24 @@ class Game(models.Model):
 	class Meta:
 	 	ordering = ['date']
 
-
 	def __unicode__(self):
 		return u"%s (%s @ %s)" % (self.game_id, self.team_away.team.initials, self.team_home.team.initials)
+
+	def get_json(self):
+		teams = [self.team_home, self.team_away]
+		game_dict = {}
+		for team in teams:
+			team_line_data = team.get_json()
+			if team.is_home():
+				status = "home_team"
+			else:
+				status = "away_team"
+			game_dict[status] = team_line_data
+		
+		game_dict['date'] = self.date.strftime('%m/%d/%Y')
+		game_dict['id'] = self.game_id
+
+		return json.dumps(game_dict)
 
 	def roster_home(self, pos = 'a'):
 		return self.team_home.get_roster(pos)
@@ -277,11 +312,22 @@ class LineGame(models.Model):
 				if x < count-1:
 					playerlist = playerlist + "-"
 				x += 1
-			statslist = "{0:4d} {1:4d} {2:4d} {3:4d} {4:6d} {5:6d} {6:3s}".format(self.goals, self.shots, self.hits, self.blocks, self.ice_time, self.num_shifts, self.line.line_type)
-			return "{0:50s} {1}".format(playerlist, statslist)
+			#pulled statlist at least temporarily
+			#statslist = "{0:4d} {1:4d} {2:4d} {3:4d} {4:6d} {5:6d} {6:3s}".format(self.goals, self.shots, self.hits, self.blocks, self.ice_time, self.num_shifts, self.line.line_type)
+			return "{0}".format(playerlist)
 		else:
 			return unicode("Empty (%d)" % self.pk)
 	
+	def get_json(self):
+		'''
+		dumps json LineGame representation'''
+		return json.dumps({'pk': self.pk, 'players': self.__unicode__(), 
+			"type" : self.line.line_type, "num_shifts" : self.num_shifts, "ice_time_num": self.ice_time, 
+			"ice_time_str": self.ice_time_str, "goals": self.goals,
+			"shots": self.shots, "blocks": self.blocks, "hits": self.hits})
+		
+
+
 	def set_ice_time_str(self):
 		'''
 		Converts object's integer of seconds into a 
@@ -345,3 +391,9 @@ def print_lines(q):
 	print "{0:<50s} {1:>4s} {2:>4s} {3:>4s} {4:>4s} {5:>6s} {6:>6s}".format("LINE", "G", "S", "H", "B", "TIME", "SHIFTS")
 	for line in q:
 		print line
+
+
+def write_to(json):
+	f = open('testjson.json', 'w')
+	f.write(json)
+	f.close()

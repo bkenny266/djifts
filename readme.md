@@ -24,6 +24,8 @@ BeautifulSoup, requests, nameparser
 
 #The Applications
 
+###API: work in progress
+
 ###Datamanager: 
 Includes methods used for downloading, processing, and storing data.
 
@@ -48,6 +50,7 @@ Includes models and views for interacting with data on a "player" level.
 	
 
 #Next Steps
+*API for json data service 
 *Refactor the datamanager app for tighter encapsulation; should make things easier to test
 *Implement rigorous testing on line matching logic.  
 *Need to be particularly vigilent about confirming data being downloaded
@@ -60,4 +63,6 @@ how to design an appealing front-end for the website.
 for new games as they occur.
 
 
-
+#Other things to do
+*New GameManager type with a "create" function that inializes a 
+list containing both home team and away team
