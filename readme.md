@@ -31,7 +31,7 @@ Delivers json data upon request
 	```
 	/api/get_game_list/ - request headers for all loaded game data
 	/api/get_game_list/[team_initials] - request headers for a specific team's loaded data
-	/api/get_game/[game_id] - request game-level data 
+	/api/get_game_data/[game_id] - request game-level data 
 	```
 
 ###Datamanager: 
