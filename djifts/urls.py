@@ -18,4 +18,5 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^teams/', include('teams.urls')),
     url(r'^games/', include('games.urls')),
+    url(r'^api/', include('api.urls')),
 )

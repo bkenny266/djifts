@@ -24,15 +24,15 @@ BeautifulSoup, requests, nameparser
 
 #The Applications
 
-###API: work in progress
+###API: 
+Export json game data - currently linked to data at the Game level via the
+following url pattern:
+	/api/game/[game_id]
 
 ###Datamanager: 
 Includes methods used for downloading, processing, and storing data.
 
 *models.py - stores game headers and methods to load game data.
-*admin.py - former "front end" for downloading game data. currently used
-as a middle-man to interact with the deeper stages of game processing, 
-but this file will need to be phased out and merged with utility.py.
 *utility.py - primary methods for loading game data includes importing  
 shift times, calculating line combinations, and writing to database.
 *eventprocessor.py - special utility module that implements a class for 
