@@ -227,7 +227,7 @@ class Game(models.Model):
 		game_dict['date'] = self.get_date_str()
 		game_dict['id'] = self.game_id
 
-		return json.dumps(game_dict)
+		return json.dumps(game_dict, indent=4)
 
 	def get_date_str(self):
 		return self.date.strftime('%m/%d/%Y')
@@ -324,10 +324,10 @@ class LineGame(models.Model):
 	def get_json(self):
 		'''
 		dumps json LineGame representation'''
-		return json.dumps({'pk': self.pk, 'players': self.__unicode__(), 
+		return {'pk': self.pk, 'players': self.__unicode__(), 
 			"type" : self.line.line_type, "num_shifts" : self.num_shifts, "ice_time_num": self.ice_time, 
 			"ice_time_str": self.ice_time_str, "goals": self.goals,
-			"shots": self.shots, "blocks": self.blocks, "hits": self.hits})
+			"shots": self.shots, "blocks": self.blocks, "hits": self.hits}
 		
 
 

@@ -51,7 +51,7 @@ class GameHeader(models.Model):
 	def get_json(self):
 		header_dict = {'id' : self.game_id, 'date' : self.get_date_str(), 
 		'home_team' : self.home_team.name, 'away_team' : self.away_team.name}
-		return json.dumps(header_dict)
+		return header_dict
 
 	def get_date_str(self):
 		return self.date.strftime('%m/%d/%Y')
@@ -85,7 +85,7 @@ class GameProcessor(object):
 		for game in query:
 			game_list.append(game.get_json())
 
-		return json.dumps(game_list)
+		return json.dumps(game_list, indent=4)
 
 	@classmethod
 	def load_headers(cls, page):
