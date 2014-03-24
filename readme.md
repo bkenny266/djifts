@@ -27,9 +27,9 @@ BeautifulSoup, requests, nameparser
 ###API: 
 Export json game data - currently linked to data at the Game level via the
 following url pattern:
-	'''
+	'’’
 	/api/game/[game_id]
-	'''
+	'’’
 
 ###Datamanager: 
 Includes methods used for downloading, processing, and storing data.
