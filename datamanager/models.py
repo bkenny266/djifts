@@ -1,7 +1,6 @@
 import datetime
 import re
 
-import json
 import requests
 from bs4 import BeautifulSoup
 from django.db import models
@@ -85,7 +84,7 @@ class GameProcessor(object):
 		for game in query:
 			game_list.append(game.get_json())
 
-		return json.dumps(game_list, indent=4)
+		return game_list
 
 	@classmethod
 	def load_headers(cls, page):

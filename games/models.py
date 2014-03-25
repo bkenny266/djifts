@@ -2,8 +2,6 @@
 '''
 GAMES - models.py
 '''
-
-import json
 from django.db import models
 
 from players.models import Player
@@ -227,7 +225,7 @@ class Game(models.Model):
 		game_dict['date'] = self.get_date_str()
 		game_dict['id'] = self.game_id
 
-		return json.dumps(game_dict, indent=4)
+		return game_dict
 
 	def get_date_str(self):
 		return self.date.strftime('%m/%d/%Y')
