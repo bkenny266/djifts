@@ -1,0 +1,10 @@
+  File "/Users/bkenny/Documents/python/djifts/datamanager/utility.py", line 387, in check_penalty_lines
+    other_lgt = LineGameTime.objects.get(linegame__teamgame=team.get_other_team(), start_time__lte=lgt.start_time, end_time__gt=lgt.start_time)
+  File "/usr/local/bin/djifts/lib/python2.7/site-packages/django/db/models/manager.py", line 143, in get
+    return self.get_query_set().get(*args, **kwargs)
+  File "/usr/local/bin/djifts/lib/python2.7/site-packages/django/db/models/query.py", line 407, in get
+    (self.model._meta.object_name, num))
+MultipleObjectsReturned: get() returned more than one LineGameTime -- it returned 2!
+   
+--------  ex. game- 13021074 
+
