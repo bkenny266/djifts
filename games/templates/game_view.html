@@ -22,6 +22,7 @@
 			<table cellspacing="1" cellpadding="3" class="tablehead hide" style="background:#CCC;" id="table_all">
 			<thead>
 				<tr class="stathead">
+					<th>TYPE</th>
 					<th class="{sorter : false}">LINE</th>
 					<th>GOALS</th>
 					<th>SHOTS</th>
@@ -33,6 +34,9 @@
 			<tbody>
 			{% for result in results_all%}
 				<tr>
+					<td>
+						{{result.line.line_type}}
+					</td>
 					<td>
 					{% for playergame in result.playergames.all %}
 						{{playergame.player.last_name}}

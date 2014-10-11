@@ -1,5 +1,5 @@
 from django.contrib import admin, messages
-from datamanager.models import GameHeader
+from datamanager.models import GameHeader, GameProcessor
 
 class GameHeaderAdmin(admin.ModelAdmin):
 
@@ -18,12 +18,16 @@ class GameHeaderAdmin(admin.ModelAdmin):
 		for g in queryset:
 			g.load_game_data()
 
+	# def load_headers(request):
+	# 	GameProcessor.load_headers(7)
+
 	actions_on_top = True
 	actions_on_bottom = True
 	list_display = ('__unicode__','processed',)
 	list_editable = ()
 
 	load_game.short_description = "Load game to database"
+	#load_headers.short_description = "Download header data"
 
 	actions = [load_game,]
 

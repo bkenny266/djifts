@@ -269,5 +269,14 @@
 			"initials": "MIN",
 			"city_name": "MINNESOTA"
 		}
+	},
+	{
+		"model":"teams.Team",
+		"pk":"31",
+		"fields": {
+			"name":"ARIZONA COYOTES",
+			"initials":"ARI",
+			"city_name": "ARIZONA"
+		}
 	}
 ]

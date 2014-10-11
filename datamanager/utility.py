@@ -69,6 +69,21 @@ def add_game(game_num):
 		return True
 
 
+def delete_game(game_num):
+	'''
+	Cleanly removes a game from data.  Used if there's an import error so the data can be rolled back.
+	'''
+	try:
+		g = Game.objects.get(pk=game_num)
+		g.team_home.delete()
+		g.team_away.delete()
+		g.delete()
+
+		return 1
+	except:
+		return 0
+
+
 def get_soup(game_num, link_type):
 	'''
 	returns a beautiful soup object of different types of game data
@@ -176,7 +191,7 @@ def import_player_data(team, roster_soup):
 		#If player does not exist, add to Player database and PlayerGame database.
 		#If player exists, add to PlayerGame database.
 		try:
-			p = Player.objects.get(last_name=last_name, team=team.team, number=number, position=position)
+			p = Player.objects.get(last_name=last_name, team=team.team, number=number)
 			PlayerGame.objects.create(player=p, team=team)
 		except Player.MultipleObjectsReturned:
 			#Check if multiple players in the league or if player has been traded
@@ -236,6 +251,9 @@ def import_player_data(team, roster_soup):
 
 	#don't need to include goalies in line combinations
 	ShiftGame.objects.filter(playergame__player__position='G').delete()
+
+	return True
+
 
 
 def make_lines(teamgame):
