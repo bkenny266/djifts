@@ -9,7 +9,7 @@ from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 
-from datamanager.utility import add_game
+from datamanager.utility import add_game, delete_game
 from teams.models import Team
 
 
@@ -37,6 +37,11 @@ class GameHeader(models.Model):
 	def load_game_data(self):
 		if add_game(self.game_id):
 			self.processed = True
+			self.save()
+
+	def reset_game_data(self):
+		if delete_game(self.game_id):
+			self.processed = False
 			self.save()
 
 	def revert_game_id(self):

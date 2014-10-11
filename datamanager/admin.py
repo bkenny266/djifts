@@ -18,6 +18,14 @@ class GameHeaderAdmin(admin.ModelAdmin):
 		for g in queryset:
 			g.load_game_data()
 
+	def reset_game(GameListAdmin, request, queryset):
+		'''
+		Cleans out a game's data.  Sets the processed flag to false
+		'''
+		for g in queryset:
+			g.reset_game_data()
+
+
 	# def load_headers(request):
 	# 	GameProcessor.load_headers(7)
 
@@ -27,8 +35,9 @@ class GameHeaderAdmin(admin.ModelAdmin):
 	list_editable = ()
 
 	load_game.short_description = "Load game to database"
+	reset_game.short_description = "Reset header and delete game data"
 	#load_headers.short_description = "Download header data"
 
-	actions = [load_game,]
+	actions = [load_game,reset_game]
 
 admin.site.register(GameHeader, GameHeaderAdmin)
