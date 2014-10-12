@@ -404,9 +404,13 @@ def check_penalty_lines(game):
 		lgt_list = LineGameTime.objects.filter(linegame__teamgame=team, active_penalty=True)
 		for lgt in lgt_list:
 			#get the number of players on the current line and the other team's line that is on the ice when this line arrives
-			this_count = lgt.linegame.playergames.count()
-			other_lgt = LineGameTime.objects.get(linegame__teamgame=team.get_other_team(), start_time__lte=lgt.start_time, end_time__gt=lgt.start_time)
-			other_count = other_lgt.linegame.playergames.count()
+			try:
+				this_count = lgt.linegame.playergames.count()
+				other_lgt = LineGameTime.objects.get(linegame__teamgame=team.get_other_team(), start_time__lte=lgt.start_time, end_time__gt=lgt.start_time)
+				other_count = other_lgt.linegame.playergames.count()
+			except:
+				ipdb.set_trace()
+
 
 
 			#if the lines both have 5 players, recalculate both as normal lines (F+D), delete original lines
@@ -582,11 +586,12 @@ def consolidate_penalties(penalty_list):
 						end_time = penalty_list[subindex].event_end_time_in_seconds
 						if subindex+1 == len(penalty_list):
 							consolidated.append((start_time, end_time))
+							prev_end_time = end_time
 				else:
 					consolidated.append((start_time, end_time))
 					prev_end_time = end_time
 					break
-		elif index+1 == len(penalty_list):
+		elif index+1 == len(penalty_list) and start_time > prev_end_time:
 			consolidated.append((start_time, end_time))
 		
 	return consolidated
