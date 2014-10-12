@@ -242,6 +242,9 @@ def import_player_data(team, roster_soup):
 			timeOff = deleteAfter(shift_list[3].text, '/')
 			timeOff = convertToSecs(timeOff, period)
 
+			#this is to prevent potential source data issues where the end of a period is mistakenly set to 0:00
+			if timeOff == (period-1)*1200 and timeOn > (period-1)*1200:
+				timeOff = period*1200
 
 			ShiftGame.objects.create(playergame=playerGameObj, start_time=timeOn, end_time=timeOff)
 
